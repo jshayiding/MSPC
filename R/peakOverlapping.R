@@ -26,7 +26,7 @@
 ##' @importFrom IRanges as.matrix
 ##' @author Julaiti Shayiding
 
-peakOverlapping <- function(peakset, FUN=which.max, ...) {
+peakOverlapping <- function(peakset, FUN=which.max) {
   # input param checking
   if (missing(peakset)) {
     stop("Missing required argument peakset, please choose the set of pre-processed peaks!")
