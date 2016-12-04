@@ -4,7 +4,7 @@
 \alias{readPeakFiles}
 \title{readPeakFile}
 \usage{
-readPeakFiles(peakFolder, pvalueBase = 1L, verbose = FALSE, ...)
+readPeakFiles(peakFolder, pvalueBase = 1L, verbose = FALSE)
 }
 \arguments{
 \item{peakFolder}{set of ChipSeq peak replicate in BED format}

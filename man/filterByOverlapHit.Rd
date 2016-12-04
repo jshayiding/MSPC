@@ -5,7 +5,7 @@
 \title{filterByOverlapHit}
 \usage{
 filterByOverlapHit(.ovHit, peakset, replicate.type = c("Biological",
-  "Technical"), isSuffOverlap = c(TRUE, FALSE), verbose = FALSE, ...)
+  "Technical"), isSuffOverlap = c(TRUE, FALSE))
 }
 \arguments{
 \item{.ovHit}{list of overlap hit index. Once we obtained overlap hit list by calling `peakOverlapping` function in previous workflow, resuled hit-list ready to be used.}

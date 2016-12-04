@@ -5,7 +5,7 @@
 \title{filterByFisherMethod}
 \usage{
 filterByFisherMethod(peakset, .hitList, cmbstrgThreshold = 1e-08,
-  isFisherPass = c(TRUE, FALSE), ...)
+  isFisherPass = c(TRUE, FALSE))
 }
 \arguments{
 \item{peakset}{set of pre-processed enriched regions stored in GRanges, where background signal (A.K.A, noise peak) were pre-processed and won't involve further workflow}

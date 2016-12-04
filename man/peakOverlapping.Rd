@@ -4,7 +4,7 @@
 \alias{peakOverlapping}
 \title{peakOverlapping}
 \usage{
-peakOverlapping(peakset, FUN = which.max, ...)
+peakOverlapping(peakset, FUN = which.max)
 }
 \arguments{
 \item{peakset}{set of Chip-seq replicate imported and all peaks are stored in GRanges object, where all background signal were pre-processed and won't involve in further downstream analysis.}

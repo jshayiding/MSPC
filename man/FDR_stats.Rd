@@ -5,7 +5,7 @@
 \title{FDR_stats}
 \usage{
 FDR_stats(peakList_A, peakList_B, pAdjustMethod = "BH", .fdr = 0.05,
-  replicate.type = c("Biological", "Technical"), outDir = getwd(), ...)
+  replicate.type = c("Biological", "Technical"), outDir = getwd())
 }
 \arguments{
 \item{peakList_A}{set of all confirmed enriched regions. `filterByFisherMethod` return set of confirmed peaks in combined stringency method}

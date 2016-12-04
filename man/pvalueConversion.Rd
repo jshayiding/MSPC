@@ -4,7 +4,7 @@
 \alias{pvalueConversion}
 \title{pvalueCoversion}
 \usage{
-pvalueConversion(x, pvalueBase = 1L, ...)
+pvalueConversion(x, pvalueBase = 1L)
 }
 \arguments{
 \item{x}{GRanges objects All Enriched regions (a.k.a, peaks) are stored in GRanges object.}

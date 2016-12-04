@@ -4,7 +4,7 @@
 \alias{Fisher_stats}
 \title{Fisher_stats}
 \usage{
-Fisher_stats(.hitList, peakset, verbose = FALSE, ...)
+Fisher_stats(.hitList, peakset)
 }
 \arguments{
 \item{.hitList}{overlap hit index for all enrichred regions that comply minimum overlapping peak requirement.}

@@ -4,8 +4,7 @@
 \alias{create_output}
 \title{create_output}
 \usage{
-create_output(peakList_A, peakList_B, tau.s = 1e-08, output_path = getwd(),
-  ...)
+create_output(peakList_A, peakList_B, tau.s = 1e-08, output_path = getwd())
 }
 \arguments{
 \item{tau.s}{permissive threshold for stringent enriched regions, all enriched peaks below this threshold, are considered stringent peaks}

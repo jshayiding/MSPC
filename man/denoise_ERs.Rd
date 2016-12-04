@@ -5,7 +5,7 @@
 \title{denoise_ERs}
 \usage{
 denoise_ERs(peakGRs, tau.w = 1e-04, .fileName = "", outDir = getwd(),
-  verbose = FALSE, ...)
+  verbose = FALSE)
 }
 \arguments{
 \item{peakGRs}{list of Chip-seq replicate imported and all enriched regions stored in GRanges objects}
