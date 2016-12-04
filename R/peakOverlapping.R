@@ -19,7 +19,7 @@
 ##' @export
 ##' @importFrom GenomicRanges findOverlaps
 ##' @importFrom XVector extractList
-##' @importfrom rtracklayer score
+##' @importFrom rtracklayer score
 ##' @importFrom IRanges which.max
 ##' @importFrom IRanges which.min
 ##' @importFrom S4Vectors DataFrame
