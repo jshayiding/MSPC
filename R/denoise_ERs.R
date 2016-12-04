@@ -17,7 +17,7 @@
 ##' @importFrom stats setNames
 ##' @author Julaiti Shayiding
 
-denoise_ERs <- function(peakGRs, tau.w= 1.0E-04, .fileName="", outDir=getwd(), verbose=FALSE, ...) {
+denoise_ERs <- function(peakGRs, tau.w= 1.0E-04, .fileName="", outDir=getwd(), verbose=FALSE) {
   # check input param
   if (missing(peakGRs)) {
     stop("Missing required argument peakGRs, please choose imported Chip-seq replicates!")

@@ -18,7 +18,7 @@
 ##' @importFrom tools file_path_sans_ext
 ##' @author  Julaiti Shayiding
 
-readPeakFiles <- function(peakFolder, pvalueBase = 1L, verbose=FALSE, ...) {
+readPeakFiles <- function(peakFolder, pvalueBase = 1L, verbose=FALSE) {
   # input param checking
   if (missing(peakFolder)) {
     stop("Missing required argument peakFolder, please choose input Chip-seq replicates in BED file!")

@@ -35,7 +35,7 @@
 ## create_output(peakList_A = confirmedERs, peakList_B = discardedERs, tau.s = 1.0E-08, output_path ="test/")
 
 
-create_output <- function(peakList_A, peakList_B , tau.s=1.0E-08, output_path=getwd(), ...) {
+create_output <- function(peakList_A, peakList_B , tau.s=1.0E-08, output_path=getwd()) {
   # input param checking
   if (missing(peakList_A)) {
     stop("Missing required argument peakList_A, please choose the list of all confirmed enriched regions in previous workflow!")

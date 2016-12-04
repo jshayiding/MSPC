@@ -27,7 +27,7 @@
 ##' @author Julaiti Shayiding
 
 FDR_stats <- function(peakList_A, peakList_B, pAdjustMethod="BH", .fdr = 0.05
-                      , replicate.type=c("Biological", "Technical"), outDir=getwd(), ...) {
+                      , replicate.type=c("Biological", "Technical"), outDir=getwd()) {
   # check input param
   if (missing(peakList_A)) {
     stop("Missing required argument peakList_A, please choose the list of all confirmed enriched regions in previous workflow!")

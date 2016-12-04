@@ -22,7 +22,7 @@
 ##'
 ##' @author Julaiti Shayiding
 
-Fisher_stats <- function(.hitList, peakset, verbose=FALSE, ...) {
+Fisher_stats <- function(.hitList, peakset) {
   # input param checking
   if (missing(peakset)) {
     stop("Missing required argument peakset, please choose the set of pre-processed peaks!")

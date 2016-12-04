@@ -15,7 +15,7 @@
 ##' @author Julaiti Shayiding
 ##' .pvalueConversion(gr, 1L)
 
-pvalueConversion <- function(x, pvalueBase = 1L, ...) {
+pvalueConversion <- function(x, pvalueBase = 1L) {
   # input param checking
   stopifnot(class(x) == "GRanges")
   stopifnot(is.numeric(pvalueBase))

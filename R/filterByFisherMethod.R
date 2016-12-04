@@ -19,7 +19,7 @@
 ##' @importFrom BiocGenerics Map
 ##' @author Julaiti Shayiding
 
-filterByFisherMethod <- function(peakset, .hitList, cmbstrgThreshold=1.0E-08 ,isFisherPass=c(TRUE, FALSE), ...) {
+filterByFisherMethod <- function(peakset, .hitList, cmbstrgThreshold=1.0E-08 ,isFisherPass=c(TRUE, FALSE)) {
   # input param checking
   if (missing(peakset)) {
     stop("Missing required argument peakset, please choose the set of pre-processed peaks!")

@@ -20,7 +20,7 @@
 ##' @author Julaiti Shayiding
 
 filterByOverlapHit <- function(.ovHit, peakset, replicate.type=c("Biological", "Technical"),
-                               isSuffOverlap= c(TRUE, FALSE), verbose=FALSE, ...) {
+                               isSuffOverlap= c(TRUE, FALSE)) {
   # check input param
   stopifnot(length(peakset)>0)
   stopifnot(inherits(peakset[[1]], "GRanges"))
