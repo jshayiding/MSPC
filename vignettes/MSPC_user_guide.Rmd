@@ -1,0 +1,158 @@
+---
+title: "MSPC Pakcage user's guide"
+author: "Julaiti Shayiding"
+date: "`r Sys.Date()`"
+package: "`r pkg_ver('MSPC')`"
+  
+output: BiocStyle::pdf_document
+vignette: >
+  %\VignetteIndexEntry{MAPC Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r style, echo=FALSE, results='asis', message=FALSE}
+BiocStyle::markdown()
+knitr::opts_chunk$set(tidy         = FALSE,
+                      warning      = FALSE,
+                      message      = FALSE)
+```
+
+
+# Abstract -- MSPC
+
+This packages implements set of functions to retrieve overlapped        enriched regions across multiple replicates in parallel (a.k.a,     pair-wise), statistical method for overlapped regions.              Simultaneous presence of an enriched regions in replicates          experiment would justify a local decrease of the stringency         criterion, leveraging on the principal that repeated evidence is    compensating for weak evidence. This packages jointly analyzes the   enriched regions of multiple replicates, distinguishing between     biological and technical replicates, and accepting user defined     parameters.
+
+## Abstract
+
+The primary emphasis of **MSPC** package is to rescue weakly enriched regions in single sample by co-localized overlapping evidence in multiple Chip-seq replicates.Simultaneous presence of an enriched regions in replicates experiment would justify a local decrease of the stringency criterion, leveraging on the principal that repeated evidence is compensating for weak evidence. We assess the presense of overlapping enriched regions across multiple replicates. The significance of overlapping regions is rigorously combined with Fisher method to obtain global score.Using Fisher method to combine ER evidence across replicates in order to increase the statistical significance of the ERs detected in the Chip-seq experiment; it assigns ERs to different sets, and in addition provides analysis features that allow performing further assessments and functional analyses on the identified ERs.
+
+**MSPC** provides functions to facilitate the output for downstream analysis   on Chip-seq replicates and generate multiple output set. **MSPC** jointly      analyzes the enriched regions of multiple replicates, distinguishing between   biological and technical replicates, and accepting user defined parameters,    and provides graphic view of output.
+
+# Introduction
+
+Chromatin Immunoprecipitation followed by sequencing (Chip-seq) detects genome wide DNA protein interations and chromatin modifications, returning enriched regions associated with significance score. Rigorously combine the evidence of ERs in Chip-seq replicates, with the options to set a permissive significance threshold on the the repeated evidence and minimum number of replicates bearing this evidence. Moderately significant interaction can correspond to true, weak interactions, or to false positives, replicates of Chip-seq experiments can provide co-localised evidence to rescue weakly enriched regions in single sample analysis by helping co-localized overlapping evidence of supporting with mutiple sample respectively. MSPC Packages provides set of functions to implement several workflow to accomplish downstream analysis efficiently. 
+
+Here we developed **MSPC** package, R/Bioconductor Package for Multiple Sample Peak Calling based on original mathod that presented on [@ Using combined evidence from replicates to evaluate ChIP-seq peaks.], to rescue weakly enriched regions in single simple by helping with co-localized overlapping evidence in multiple sample. To achieve better performance, I have used Bioconductor Core Packages, `GenomicRanges`, `IRanges`, `rtracklayer`, and `GRanges` object for storing all enriched regions in Chip-seq replicates for the sake of ease of use by R user. We assess the presence of overlapping peaks across mutiple Chip-seq replicates simulatanously, we introduced combined stringency test for all enriched regions comply minimum overlapping peak requirement, through Fisher method. Obtained combined p-value of enriched regions will against combined stringency threshold, which yield confirmed / discarded peak set. Finally, we need to do intermediate set purification, for example, if user choose `Technical` replicates in their input, then enriched regions passed in one test but failed next successive test, these peaks won't be involbed in output set. To help user deeper insight about analysis result, `create_outputset` function also provides graphical view of output set.
+
+# downstream analysis workflow for Chip-seq experiments
+
+
+## import Chip-seq peak files and data conversion.
+
+This workflow show how to read Genomic data set to `GRanges` objects. The first, efficiently reading input Chip-seq or DNAse-seq data set (A.k.A, Chip-seq replicates) in R. Here is handy Bioconductor package `rtracklayer` provides rich functionality to read various type of Genomic data set. **MSPC** provides `readPeakFile` function that can read peak file in standard BED format and stored in GRanges object, where several peak files (A.K.A, Chip-seq replicates) can be read simultaneously using lapply. Some data sources provides Chip-seq enriched regions (A.K.A, peaks) without p-value under specific conditions. **MSPC** provides utility function to data conversion of peak' score as p-value. For detailed information, please see ? `pvalueConversion` method.
+
+```{r}
+library(MSPC)
+
+# Initial attemp getting desired external data from this function 
+
+getExtDat <- function() {
+  dir <- system.file("extdata", package="MSPC")
+  files <- list.files(dir)
+  # FIXME : I got error, make it more dynamic
+  #patt <- gsub(pattern='wgE\\d+_(\\w+_\\w+)_.*', replacement='\\1',files)
+  res <- paste(dir, files, sep="/")
+  res <- as.list(res)
+  return(res)
+}
+
+myDat <- print(getExtDat)
+
+inputData <- readPeakFiles(peakFolder = myDat , pvalueBase = 1L, verbose = FALSE)
+
+inputData
+```
+
+
+```{r}
+library(MSPC)
+
+# This is dummy example try to make external data available for vignette code
+f1 <- system.file("extdata", "bar.bed", "MSPC")
+f2 <- system.file("extdata", "cat.bed", "MSPC")
+f3 <- system.file("extdata", "foo.bed", "MSPC")
+
+fAll <- list(bar=f1, cat=f2, foo=f3)
+
+initDat <- readPeakFiles(peakFolder = fAll , pvalueBase = 1L, verbose = FALSE)
+
+initDat
+
+```
+
+## pre-process input Chip-seq replicates & clean background noise
+
+Initial workflow, we set up permissive threshold for signal' significant value of each enriched region, where extremely weakly enriched regions won't be processed, so we did purification on imported Chip-seq replicates. Extremenly weakly enriched regions (A.K.A, background signals) are exported as standard BED file for the sake of statisitcal learning. Finally, through committing initial workflow, we'll get set of enriched regions (where backgroung signal were filtered out) for get starting next level workflow. 
+**MSPC** provides function `denoise_ERs` method to purify original Chip-seq replicates, to detect background signal and exluded from original peak files. The reason exporting background peaks is for the sake of giving clear evidence after whole workflow is done. For further detailed information, please read help pages ?`denoise_ERs`.
+
+
+```{r}
+## original Chip-seq replicates are imported as S4 object, GRanges
+total.ERs <- denoise_ERs(peakGRs = inputData, tau.w = 1.0E-04, .fileName = "noiseER", outDir = "", verbose = FALSE)
+
+total.ERs
+```
+
+## overlapping enrichre regions across multiple Chip-seq replicates simultaneously
+
+We designed a general methodological framework to rigorously combine the evidence of enriched regions in Chip-seq replicates, with the option to set significance threshold on the repeated evidence and minimum number of samples bearing this evidence.
+
+In our method, we are going to assess each enriched regions in current replicates (A.K.A, chosen replicates) with the support of rest of Chip-seq replicates in input dataset for overlapping enriched regions. Due to processing each genomic regions (all peak intervals are stored in GRanges objects) by element-wise to find overlap is quite inefficient, **MSPC** provides `peakOverlapping` function which efficiently vectorize retrieving overlapped regions from multiple Chip-seq replicates as list-like vector where overlap position index is returned. `> special thanks to Martin Morgan solution on Bioconductor support site` .it may happen that an enriched region(A.K.A, peak or ER) from current Chip-seq replicate overlap multiple ERs from other supported replicates. `.peakOverlapping` retrieve only one overlapping peak from each supported Chip-seq replicate. `peakOverlapping` function accept two parameter, first argument `peakset` is set of enrichred regions in GRanges objects, which treated as `GRangesList` object, second one `FUN` is used to choose most stringent(with lowest p-value) or least stringent(with highest p-value) overlapped peak if multiple peaks overlapping were detected. User could choose keeping most stringent / least stringent peak from multiple overlapped ERs by custom; `Fun` could call `which.max` or `which.min`. For the further detailed information, please review help page ?`peakOverlapping`
+
+```{r workflow1, fig.width=6, fig.height=6}
+##
+all_hitList <- peakOverlapping(peakset = total.ERs, FUN = which.max)
+
+```
+
+## check minimum overlapping peak requirement
+
+We assess the presence of overlapping peak across multiple Chip-seq replicates simultanously. `peakOverlapping` function provides overlap hit list with correct geometry of peak overlapping, resulted hit list, we can count overlapping cardinality by performing vector sum. `filterByOverlapHit` return list of overlap hit index where all enriched regions comply minimum overlapping peak requirement. `isSuffOverlap` has two options which give both ERs comply with minimum requirement as overlap hit index list, and ERs with failed minimum requirement as GRanges objects (To evaluate discarded ERs with failing of minimum overlapping requirement, it it intuitive corresponding overlap hit list as GRanges object for later biological evaluation). 
+
+```{r}
+keepList <- filterByOverlapHit(.ovHit = all_hitList, peakset = total.ERs, replicate.type = "Biological", isSuffOverlap = TRUE)
+
+keepList
+
+initDiscardERs <- filterByOverlapHit(.ovHit = all_hitList, peakset = total.ERs, replicate.type = "Biological", isSuffOverlap = FALSE)
+
+initDiscardERs
+
+```
+
+## combine stringency test by using Fisher method.
+
+Main idea behind our method is to rescue weakly enriched regions in single sample by helping with co-localized overlapping evidence in multiple chip-seq replicates. we assess the presence of overlapping peak across multiple sample. Therefore, the significance of overlapping peaks is rigorously combined with Fisher method to obtain global fisher score. **MSPC** provides `Fisher_stats` helper function to retrieve the pvalue of all enriched regions that comply with minimum overlapping peak requirement, with correct gemotry of overlap hit list, then using `sumlog` method from `metap` packages to get global Fisher score. Note that obtained global fisher score is correctly match the original gemotry of overlap-hit list by parallel. For the further detailed information, please review help page ?`Fisher_stats` . **MSPC** provides `filterByFisherMethod` to perform combine stringency test on all enriched regions that comply minimum overlapping peak requirement, and create confirmed or discarded peak set accordingly. As we mentioned in introduction sestion, main emephasis of this packages to rescue weakly enriched regions in single sample by helping with co-localized overlpping evidence in multiple sample. `filterByFisherMethod` function efficiently classify all peaks and create corresponding output set. For further detailed information, please go through help pages ?`filiterByFisherMethod` .
+
+```{r}
+## output of combined stringency test
+
+confirmedERs <- filterByFisherMethod(peakset = total.ERs, .hitList = keepList , cmbstrgThreshold = 1.0E-08, isFisherPass = TRUE)
+discardedERsByFisher <- filterByFisherMethod(peakset = total.ERs, .hitList = keepList, cmbstrgThreshold = 1.0E-08, isFisherPass = FALSE)
+
+```
+
+Through different workflow, enriched regions will be discarded by permissive threshold, we need to collect all discarded enriched regions in different workflow into single unit in order to give clear evidence for Biological evaluation.
+
+```{r}
+# combine initDiscardERs and discardedERsByFisher
+
+discardedERs <- mapply(c, initDiscardERs, discardedERsByFisher)
+
+```
+
+## Intermediate set purification and create output set
+We distinguish between technical and biological replicates of Chip-seq experiments. If user' input replicate `Technical`, An enriched regions passed in one test but failed in successive test, then this ERs won't be included in output set. For this reason, we decided to perform set purification to collect valid confirmed enriched regions. Due to repeated evidence across multiple replicates can compensate for lower sigificance in single sample, an enriched regions might be multiple times confirmed or discarded according to different parameter usages. This is one of key characteristic of out method that assign an enriched regions in different set, in addition which provides analysis features that allow performing further assessments and functional analyses on the identified ERs.
+
+```{r}
+myOutput <- create_output(peakList_A = confirmedERs, peakList_B = discardedERs, tau.s = 1.0E-08, output_path = "")
+
+myOutput
+```
+
+parameter `peakList_A` is set of all confirmed enriched regions, `peakList_B` is set of all discarded enriched regions, parameter `tau.s` is permissive threshold for stringent peaks, all enriched regions' significance score below this threhold, are considered stringent enriched regions, while above this threshold are weakly enriched regions. User has an option to control where the exported output bed file goes by using `output_path` paramteter. For the sake of easy understand the output set, `create_output` function also return stach bar plot for each Chip-seq replicates accordingly. For the further detailed information, please review help pages ?`create_output`.
+
+## brief summary of MSPC Packages
+
+## Reference
