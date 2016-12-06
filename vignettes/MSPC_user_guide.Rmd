@@ -44,22 +44,34 @@ This workflow show how to read Genomic data set to `GRanges` objects. The first,
 
 ```{r}
 library(MSPC)
-getExtData <- function() {
+getPeakFile <- function() {
   dir <- system.file("extdata", package="MSPC")
   files <- list.files(dir)
-  # FIXME : I got error, make it more dynamic
-  patt <- gsub(pattern='wgEncode\\d+_(\\w+_\\w+)_.*', replacement='\\1',files)
-  patt <- sub("_Chip.+", "", patt)
+  ER <- gsub(pattern='wgEncode\\d+_(\\w+_\\w+)_.*', replacement='\\1',files)
+  patt <- sub("_Chip.+", "", ER)
   res <- paste(dir, files, sep="/")
   res <- as.list(res)
-  names(res) <- patt
+  names(res) <- ER
   return(res)
 }
 
-print(getExtData())
-
+print(getPeakFile())
+bedfiles <- getPeakFile()
 
 ```
+
+
+```{r}
+
+lapply(bedfiles, function(x) {
+  res <- as(import.bed(x), "GRanges")
+  if(is.null(res$p.value)) {
+    .gr <- pvalueConversion(res, 1L)
+  }
+})
+
+```
+
 
 ## pre-process input Chip-seq replicates & clean background noise
 

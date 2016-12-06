@@ -30,7 +30,7 @@ readPeakFiles <- function(peakFolder, pvalueBase = 1L, verbose=FALSE) {
   stopifnot(is.numeric(pvalueBase))
   files <- list.files(peakFolder, full.names = TRUE, "\\.bed$")
   f.read <- setNames(
-    lapply(files, function(ele_) {
+    lapply(peakFolder, function(ele_) {
       .gr <- as(import.bed(ele_), "GRanges")
       if(is.null(.gr$p.value)) {
         .gr <- pvalueConversion(.gr, 1L)
