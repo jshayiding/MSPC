@@ -20,11 +20,11 @@
 ##' @author Julaiti Shayiding
 
 filterByOverlapHit <- function(.ovHit, peakset, replicate.type=c("Biological", "Technical"),
-                               isSuffOverlap= c(TRUE, FALSE)) {
+                               isSuffOverlap= TRUE) {
   # check input param
   stopifnot(length(peakset)>0)
   stopifnot(inherits(peakset[[1]], "GRanges"))
-  stopifnot(missing(isSuffOverlap))
+  #stopifnot(missing(isSuffOverlap))
   replicate.type = match.arg(replicate.type)
   if (missing(peakset)) {
     stop("Missing required argument peakset, please choose the set of pre-processed peaks!")
@@ -35,14 +35,14 @@ filterByOverlapHit <- function(.ovHit, peakset, replicate.type=c("Biological", "
   min.c <- ifelse(replicate.type=="Biological",
                   length(peakset)-1,
                   length(peakset))
-  cnt.ovHit <- as.matrix(Reduce('+', lapply(hit.List, lengths)))
+  cnt.ovHit <- as.matrix(Reduce('+', lapply(.ovHit, lengths)))
   if(isSuffOverlap==TRUE) {
-    keepHit <- lapply(hit.List, function(ele_) {
+    keepHit <- lapply(.ovHit, function(ele_) {
       keepMe <- sapply(cnt.ovHit, function(x) x >= min.c)
       res <- ele_[keepMe]
     })
   } else if(isSuffOverlap==FALSE){
-    dropHit <- lapply(hit.List, function(ele_) {
+    dropHit <- lapply(.ovHit, function(ele_) {
       droped <- sapply(cnt.ovHit, function(x) x < min.c)
       res <- ele_[droped]
     })

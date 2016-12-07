@@ -32,7 +32,7 @@ Fisher_stats <- function(.hitList, peakset) {
   }
   stopifnot(inherits(peakset[[1]], "GRanges"))
   message("retrieve pvalue of peaks")
-  pval_List <- mapply(.get.pvalue, hitTB, peakset)
+  pval_List <- mapply(.get.pvalue, .hitList, peakset)
   .helper.PV <- function(p.list) {
     res <- sapply(p.list, function(x) {
       out <- ifelse(length(x)>0,
@@ -53,9 +53,9 @@ Fisher_stats <- function(.hitList, peakset) {
   return(comb.pval)
 }
 
-.get.pvalue <- function(ovHit, obj, verbose=FALSE, ...) {
+.get.pvalue <- function(hit, obj) {
   # input param checking
   stopifnot(class(obj)=="GRanges")
-  res <- extractList(obj$p.value, ovHit)
+  res <- extractList(obj$p.value, hit)
   return(res)
 }

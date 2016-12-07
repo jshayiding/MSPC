@@ -27,23 +27,22 @@ filterByFisherMethod <- function(peakset, .hitList, cmbstrgThreshold=1.0E-08 ,is
   if (missing(.hitList)) {
     stop("please choose the set of overlap hit index that comply minimum overlapping peak requirement!")
   }
-  stopifnot(inherits(peakset[[1L]], "GRanges"))
-  stopifnot(is.numeric(tau.s))
+  stopifnot(is.numeric(cmbstrgThreshold))
   stopifnot(class(.hitList[[1L]])=="CompressedIntegerList")
-
-  comb.p <- .Fisher.stats(peakset, .hitList)
+  stopifnot(class(peakset[[1L]])=="GRanges")
+  comb.p <- Fisher_stats(peakset, .hitList)
   if(isFisherPass==TRUE) {
     .filtHelper <- function(ele_) {
-      keepMe <- sapply(comb.p, function(x) x<=tau.s)
+      keepMe <- sapply(comb.p, function(x) x<=cmbstrgThreshold)
       res <- ele_[keepMe]
     }
   } else if(isFisherPass==FALSE) {
     .filtHelper <- function(ele_) {
-      drop_ <- sapply(comb.p, function(x) x > tau.s)
+      drop_ <- sapply(comb.p, function(x) x > cmbstrgThreshold)
       res <- ele_[drop_]
     }
   }
-  .hitIdx <- lapply(.ovHit, .filtHelper)
+  .hitIdx <- lapply(.hitList, .filtHelper)
   .expandAsGR <- Map(unlist,
                      mapply(extractList, peakset, .hitIdx))
   .expandAsGR[[1L]] <- unique(.expandAsGR[[1L]])
@@ -52,5 +51,5 @@ filterByFisherMethod <- function(peakset, .hitList, cmbstrgThreshold=1.0E-08 ,is
 }
 
 #' @example
-# .Confirmed.ERs <- .filterByFisherMethod(total.ERs, keepList, tau.s=1.0E-08, comb.p, isFisherPass = TRUE)
-# .Discarded.ERs <- .filterByFisherMethod(total.ERs, keepList, tau.s=1.0E-08, comb.p, isFisherPass = FALSE)
+# .Confirmed.ERs <- .filterByFisherMethod(total.ERs, keepList, cmbstrgThreshold=1.0E-08, comb.p, isFisherPass = TRUE)
+# .Discarded.ERs <- .filterByFisherMethod(total.ERs, keepList, cmbstrgThreshold=1.0E-08, comb.p, isFisherPass = FALSE)

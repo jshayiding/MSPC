@@ -43,6 +43,7 @@ This workflow show how to read Genomic data set to `GRanges` objects. The first,
 
 
 ```{r}
+library(rtracklayer)
 library(MSPC)
 getPeakFile <- function() {
   dir <- system.file("extdata", package="MSPC")
@@ -62,16 +63,53 @@ bedfiles <- getPeakFile()
 
 
 ```{r}
+readBedAsGR <- function(){
+  res <- lapply(bedfiles, function(x) {
+    .gr <- as(import.bed(x), "GRanges")
+    if(is.null(.gr$p.value)) {
+      .gr <- pvalueConversion(.gr, 10L)
+    }
+  })
+  return(res)
+}
 
-lapply(bedfiles, function(x) {
-  res <- as(import.bed(x), "GRanges")
-  if(is.null(res$p.value)) {
-    .gr <- pvalueConversion(res, 1L)
-  }
-})
+myData <- readBedAsGR()
+
+inputDat <- myData[1:3]
 
 ```
 
+
+```{r}
+
+total.ERs <- denoise_ERs(peakGRs = inputDat, tau.w = 1.0E-04, .fileName = "noise", outDir = getwd(), verbose = FALSE)
+
+options(scipen = 0)
+total.ERs
+
+```
+
+
+```{r}
+# we acess the peak overlapping across the multiple Chip-seq replicates
+Hit <- peakOverlapping(peakset = total.ERs, FUN = which.max)
+```
+
+
+```{r}
+# filter ERs whether comply minimum overlapping peak requirement
+
+keepList <- filterByOverlapHit(.ovHit = Hit, peakset = total.ERs, replicate.type = "Biological", isSuffOverlap = TRUE)
+
+initDiscERs <- filterByOverlapHit(.ovHit = Hit, peakset = total.ERs, replicate.type = "Biological", isSuffOverlap = FALSE)
+
+```
+
+
+```{r}
+# using Fisher method to get global Fisher score
+comb.pvl <- Fisher_stats(.hitList = keepList, peakset = total.ERs)
+```
 
 ## pre-process input Chip-seq replicates & clean background noise
 
