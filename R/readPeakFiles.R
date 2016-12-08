@@ -28,15 +28,13 @@ readPeakFiles <- function(peakFolder, pvalueBase = 1L, verbose=FALSE) {
         format(Sys.time(), "%Y-%m-%d %X"), "\n")
   stopifnot(length(peakFolder)>0)
   stopifnot(is.numeric(pvalueBase))
-  files <- list.files(peakFolder, full.names = TRUE, "\\.bed$")
-  f.read <- setNames(
-    lapply(peakFolder, function(ele_) {
-      .gr <- as(import.bed(ele_), "GRanges")
-      if(is.null(.gr$p.value)) {
-        .gr <- pvalueConversion(.gr, 1L)
-      }
-    }), tools::file_path_sans_ext(basename(files))
-  )
+  #files <- list.files(peakFolder, full.names = TRUE, "\\.bed$")
+  f.read <- lapply(peakFolder, function(ele_) {
+    .gr <- as(import.bed(ele_), "GRanges")
+    if(is.null(.gr$p.value)) {
+      .gr <- pvalueConversion(.gr, 1L)
+    }
+  })
   res <- f.read
   return(res)
 }

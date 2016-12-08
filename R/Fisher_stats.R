@@ -30,7 +30,6 @@ Fisher_stats <- function(.hitList, peakset) {
   if (missing(.hitList)) {
     stop("Missing required argument .hitList, please choose overlap hit list that comply minimum overlapping peak requirement!")
   }
-  stopifnot(inherits(peakset[[1]], "GRanges"))
   message("retrieve pvalue of peaks")
   pval_List <- mapply(.get.pvalue, .hitList, peakset)
   .helper.PV <- function(p.list) {
@@ -55,7 +54,6 @@ Fisher_stats <- function(.hitList, peakset) {
 
 .get.pvalue <- function(hit, obj) {
   # input param checking
-  stopifnot(class(obj)=="GRanges")
   res <- extractList(obj$p.value, hit)
   return(res)
 }

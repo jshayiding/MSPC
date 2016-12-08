@@ -29,6 +29,8 @@
 ##' @importFrom ggplot2 ggplot
 ##' @importFrom ggplot2 geom_col
 ##' @importFrom ggplot2 facet_wrap
+##' @importFrom ggplot2 aes
+##' @importFrom ggplot2 position_stack
 ##' @importFrom ggplot2 geom_text
 ##'
 ##' @author Julaiti Shayiding
@@ -43,7 +45,6 @@ create_output <- function(peakList_A, peakList_B , tau.s=1.0E-08, output_path=ge
   if (missing(peakList_B)) {
     stop("Missing required argument peakList_B, please choose the list of all discarded enriched regions in previous workflow!")
   }
-  stopifnot(missing(tau.s))
   stopifnot(is.numeric(tau.s))
   if (!dir.exists(output_path)) {
     dir.create(file.path(output_path))
@@ -69,8 +70,8 @@ create_output <- function(peakList_A, peakList_B , tau.s=1.0E-08, output_path=ge
     } %>%
     ggplot(aes(x=var, y=n, fill=val)) + geom_col() +
     facet_wrap(~Replicate)+ geom_text(aes(label=n), position=position_stack(vjust = 0.5))
-  out_names <- paste0(output_path, names(combDF), ".bed")
-  return(mapply(export.bed, combDF, out_names))
+  out_names <- paste0(output_path, names(combDF), ".csv")
+  return(mapply(write.csv, combDF, out_names))
 }
 
 ##' @example
