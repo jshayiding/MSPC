@@ -2,33 +2,32 @@
 % Please edit documentation in R/create_output.R
 \name{create_output}
 \alias{create_output}
-\title{create_output}
+\title{Graphical view of different output for each Chip-seq replicates.}
 \usage{
-create_output(peakList_A, peakList_B, tau.s = 1e-08, output_path = getwd())
+create_output(peakList_A, peakList_B, tau.s = 1e-08)
 }
 \arguments{
-\item{tau.s}{permissive threshold for stringent enriched regions, all enriched peaks below this threshold, are considered stringent peaks}
+\item{peakList_A}{output of \link{filterBycombStringency},
+is set of all confirmed ERs in \link[GenomicRanges]{GRanges} objects.}
 
-\item{peaklist_A}{set of confirmed enriched regions for all Chip-seq replicates}
+\item{peakList_B}{output of \link{filterBycombStringency},
+is set of all discarded ERs in \link[GenomicRanges]{GRanges} objects.}
 
-\item{peaklist_B}{set of discarded enriched regions for all Chip-seq replicates}
-
-\item{outDir}{user can control where exported BED file goes}
+\item{tau.s}{permissive threshold for stringent enriched regions,
+all enriched regions below this threshold, are considered stringent ERs}
 }
 \value{
-BED file
+using \link[ggplot2]{ggplot} to generate stack bar plot for file bar
 }
 \description{
-create stringnet/weak ERs by permissive stringent threshold
-}
-\details{
-Filter ERs by permissive stringency threshold
-
-Chip-seq detects genome-wide DNA protein interation, returing enriched regions which associated with significance score.
-In our methodological framework, we design permissive threshold for all enriched regions' score (A.K.A, peak signal's significance),
-to classify each peak as stringent or weakly enriched by its p-value.Once getting set of confirmed, discarded enriched regions for all Chip-seq replicates,
-it is intuitive to generate stringent, weak peak set accordingly. To help user gaining deeper insight and biological evaluation of analysis result,
-graphical visualization of corresponding peak set also created by handy.
+Chip-seq detects genome-wide DNA protein interation,
+returing enriched regions which associated with significance score.
+Using permissive threshold tau.s for signal' significant
+value of stringent enriched region, we could identify
+set of stringent, weakly enriched regions by manipulating the output of
+\link{filterBycombStringency} function.  To help user gaining
+deeper insight and biological evaluation of analysis result, using \link[ggplot2]{ggplot}
+to generate stack bar plot for each Chip-seq replicates can be done.
 }
 \author{
 Julaiti Shayiding

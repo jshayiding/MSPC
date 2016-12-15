@@ -4,7 +4,7 @@
 \alias{pvalueConversion}
 \title{pvalueCoversion}
 \usage{
-pvalueConversion(x, pvalueBase = 1L)
+pvalueConversion(x, pvalueBase = 10L)
 }
 \arguments{
 \item{x}{GRanges objects All Enriched regions (a.k.a, peaks) are stored in GRanges object.}
@@ -22,9 +22,10 @@ Some data sources provides Chip-seq enriched regions (A.K.A, peaks) without p-va
 pvalueConversion is the utility function to do data conversion of peak' score as p-value
 In standard BED file, significant value of peak signal defined as Score column,
 Thus we need to convert it as p.value (- log(p.value), -10 log(p.value), -100 log(p.value))
+
+Passed to \link{readPeakFiles}
 }
 \author{
 Julaiti Shayiding
-.pvalueConversion(gr, 1L)
 }
 

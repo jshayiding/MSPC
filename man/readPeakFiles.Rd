@@ -2,14 +2,14 @@
 % Please edit documentation in R/readPeakFiles.R
 \name{readPeakFiles}
 \alias{readPeakFiles}
-\title{readPeakFile}
+\title{Import Chip-seq replicates and all ERs are stored in GRanges objects.}
 \usage{
-readPeakFiles(peakFolder, pvalueBase = 1L, verbose = FALSE)
+readPeakFiles(peakFolder, pvalueBase = 10L, verbose = FALSE)
 }
 \arguments{
-\item{peakFolder}{set of ChipSeq peak replicate in BED format}
+\item{peakFolder}{set of ChipSeq peak replicate in BED format file}
 
-\item{pvalueBase}{user has options to choose the p-value format(- log(p-value), -10 log(p-value), -100 log(p-value)). By default, use -10 log(p-value) ;}
+\item{pvalueBase}{user has options to choose the p-value format}
 
 \item{verbose}{logical that control whether the output is printed or not}
 }
@@ -17,13 +17,11 @@ readPeakFiles(peakFolder, pvalueBase = 1L, verbose = FALSE)
 GRanges object
 }
 \description{
-read Chip-seq replicated and all enriched regiions are stored in GRanges object.
+readPeakFiles can read peak file in standard BED format using \link[rtracklayer]{import.bed}
+and stored in GRanges object, where several peak files can be read simultaneously using lapply
 }
 \details{
-Import Chip-seq replicates and all ERs are stored in GRanges objects.
-
-readPeakFiles can read peak file in standard BED format and stored in GRanges object,
-where several peak files (A.K.A, Chip-seq replicates) can be read simultaneously using lapply
+Passed to \link{denoise_ERs}
 }
 \author{
 Julaiti Shayiding

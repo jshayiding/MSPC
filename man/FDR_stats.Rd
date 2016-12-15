@@ -2,38 +2,42 @@
 % Please edit documentation in R/FDR_stats.R
 \name{FDR_stats}
 \alias{FDR_stats}
-\title{FDR_stats}
+\title{Multiple Testing Correction}
 \usage{
-FDR_stats(peakList_A, peakList_B, pAdjustMethod = "BH", .fdr = 0.05,
-  replicate.type = c("Biological", "Technical"), outDir = getwd())
+FDR_stats(peakList_A, peakList_B, pAdjustMethod = "BH", fdr = 0.05,
+  replicate.type = c("Biological", "Technical"))
 }
 \arguments{
-\item{peakList_A}{set of all confirmed enriched regions. `filterByFisherMethod` return set of confirmed peaks in combined stringency method}
+\item{peakList_A}{output of \link{filterBycombStringency}, is set of all confirmed ERs in \link[GenomicRanges]{GRanges} objects.}
 
-\item{peakList_B}{set of all discarded enriched regions. `filterByFisherMethod` return set of discarded peaks in combined stringency method.}
+\item{peakList_B}{output of \link{filterBycombStringency}, is set of all discarded ERs in \link[GenomicRanges]{GRanges} objects.}
 
-\item{pAdjustMethod}{adjusted pvalue for multiple comparison}
+\item{pAdjustMethod}{pvalue adjustment method}
 
-\item{.fdr}{parameter for false discovery rate. User can tune false discovery rate.#' @param replicate.type A charcter vector used to select type of Chip-seq replicate ( Biological / Technical replicate)}
+\item{fdr}{parameter for false discovery rate. User can tune false discovery rate.}
 
-\item{outDir}{user can control where the exported BED file goes}
+\item{replicate.type}{A charcter vector used to select type of Chip-seq replicate ( Biological / Technical replicate).}
 }
 \value{
-BED file
+output of multiple testing correction can be exported as BED file by using \link[rtracklayer]{export.bed} method.
 }
 \description{
-proceed set purification for set of ERs and create output set
-}
-\details{
-Intermediate set purification and to create output set through BH correction test
-
-We distinguish Technical and Biological Chip-seq replicates. Technical replicates aim at controlling
-the variability of the experimental procedure used to obtain the data should yield exactly the same result in
-the absence of experimental noise. If user choose replicate type as `Technical`,
-then enriched regions were passed in one test (A.K.A, comply minimum overlapping peak requirement) but failed the another (A.K.A, combined stringency test with Fisher's method),
-these peaks won't be appeared in final output set. We call this procedure as intermediate set purification. I believe using comparing list-like data structure is intuitive and fast,
-using `anti_join` method from dplyr packages made this job easily. Then using the Benjamini-Hochberg multiple testing correction with user-specified false discovery rate to create output set accordingly.
-confirmed peak in output set are exported standard BED file.
+We distinguish Technical and Biological Chip-seq replicates.
+Technical replicates aim at controlling the variability of
+the experimental procedure used to obtain the data should
+yield exactly the same result in the absence of experimental noise.
+If user choose replicate type as `Technical`, then enriched regions
+were passed in one test (A.K.A, comply minimum overlapping peak requirement)
+but failed in the another (A.K.A, combined stringency test with Fisher's method),
+these peaks won't be appeared in final output.
+Given the output of \link{filterBycombStringency}, we decided to use
+intermediate set purification to further check any ERs both exist in
+confirmed, discarded ERs set. We kept all confirmed ERs, discarded ERs in the list,
+so using `anti_join` method from dplyr packages make set purification easy.
+However, we need to correct the p.value of ERs using the Benjamini-Hochberg
+multiple testing correction with user-specified false discovery rate,
+using \link[stats]{p.adjust} to do BH correction method,  which yields
+multiple-testing confirmed or discarded ERs.
 }
 \author{
 Julaiti Shayiding

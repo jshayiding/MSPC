@@ -2,32 +2,70 @@
 % Please edit documentation in R/filterByOverlapHit.R
 \name{filterByOverlapHit}
 \alias{filterByOverlapHit}
-\title{filterByOverlapHit}
+\title{Check minimum overlapping peak requirement over overlap-hit list}
 \usage{
 filterByOverlapHit(.ovHit, peakset, replicate.type = c("Biological",
   "Technical"), isSuffOverlap = TRUE)
 }
 \arguments{
-\item{.ovHit}{list of overlap hit index. Once we obtained overlap hit list by calling `peakOverlapping` function in previous workflow, resuled hit-list ready to be used.}
+\item{.ovHit}{output of \link{peakOverlapping} where all overlap-hit pair is in \link[IRanges]{IntegerList}}
 
-\item{peakset}{set of Chip-seq replicate imported and all peaks are stored in GRanges object.}
+\item{peakset}{output of \link{denoise_ERs}. Set of Chip-seq replicate imported
+and all peaks are stored in GRanges object, where all background noise were excluded from \link{denoise_ERs} function}
 
 \item{replicate.type}{A charcter vector used to select type of Chip-seq replicate ( Biological / Technical replicate)}
 
-\item{isSuffOverlap}{logical vector that check whether comply minimum overlapping peak requirement. TRUE: return overlap hit list where all enriched regions comply minimum overlapping peak requirement. FALSE : return all discarded enriched regions as GRange object due to failing to comply minimum overlapping peak requirement. both is required}
+\item{isSuffOverlap}{logical vector that check whether ERs comply minimum overlapping peak requirement.
+\code{TRUE}: return overlap hit list where all enriched regions comply minimum overlapping peak requirement.
+\code{FALSE}: return all discarded enriched regions as GRange object due to failing to comply minimum overlapping peak requirement.}
 }
 \value{
-list-like object
+\code{isSuffOverlap} is \code{True}: return list of ERs in \link[IRanges]{IntegerList} that comply with minimum overlapping peak requirement
+\code{isSuffOverlap} is \code{False} : return list of \link[GenomicRanges]{GRanges} objects that all discarded peaks are saved.
 }
 \description{
-Filter ERs by overlap-hit index list
+Given output of \link{peakOverlapping} where all possible overlap pair is included,
+we need to check whether each enriched regions comply minimum overlapping peak requiremnet or not.
+\link{peakOverlapping} function give us correct geometry of overlap peaks as list-like object.
+Getting cardinality of overlapping ERs in parallel. \code{min.c} is minimum overlapping peak requirement,
+that determined by type of Chip-seq replicates, and number of samples are chosen.
+Based on \code{min.c} parameter, we could identify whether all enriched regions
+comply minimum overlapping peak requirement. Where only ERs that comply the minimum requirement,
+we could proceed our analysis For Fisher' combined test. For the sake of efficiency,
+all ERs fullfill the requirement kept in \link[IRanges]{IntegerList} objects.
 }
 \details{
-Once we obtained list of overlap-hit index where all possible overlap pair is included, we need to
-further investigate hit index with our defined method. In previous workflow, `peakOverlapping` function give us correct geometry of overlap peaks as list-like object by parallel.
-we need to do vector sum for getting overall overlaped peak numbers and proceed our evaluation. Where all enriched regions comply minimum overlap peak requirement,
-are returned as overlap hit list and used for next workflow, while all enriched regions fail to comply the minimum overlap peak requirement, are returned as GRanges objects.
-Due to further need of evaluating all enriched regions in different level in order to give clear Biological evidence, we decide to expand those overlap hit index as GRanges objects.
+Passed to \link{filterBycombStringency}
+}
+\examples{
+require(GenomicRanges)
+require(rtracklayer)
+require(XVector)
+
+## example peaks in GRanges object
+bar = GRanges(
+  seqnames=Rle("chr1", 3), ranges=IRanges(c(12,21,37), c(14,29,45)), strand = Rle(c("*"),3),
+              rangeName=c("a1", "a2", "a3"), score=c(22, 6,13))
+cat = GRanges(
+  seqnames=Rle("chr1", 6), ranges=IRanges(c(5,12,16,21,37,78), c(9,14,19,29,45,84)),
+  strand = Rle(c("*"),6), rangeName=c("b1", "b2", "b3","b4", "b6", "b7"), score=c(12, 5, 11, 8, 4, 3))
+## Add p.value as metadata column
+grs <- GRangesList("bar"=bar, "cat"=cat)
+grs <- lapply(grs, pvalueConversion)
+
+## Exclude background noise
+total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
+                         fileName = "noise", outDir = getwd())
+## find overlapping
+hit <- peakOverlapping(total.ERs, FUN=which.max)
+
+## check whether each ERs comply with minimum overlapping peak requirement
+keepList <- filterByOverlapHit(hit, peakset = total.ERs,
+                               replicate.type = "Biological",
+                               isSuffOverlap=TRUE)
+initDisc.ERs <- filterByOverlapHit(hit, peakset = total.ERs,
+                                   replicate.type = "Biological",
+                                   isSuffOverlap=FALSE)
 }
 \author{
 Julaiti Shayiding

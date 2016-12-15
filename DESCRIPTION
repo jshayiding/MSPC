@@ -4,7 +4,7 @@ Title: Using combined evidence from replicates to evaluate ChIP-seq peaks
 Version: 0.99.0
 Author: Julaiti Shayiding
 Depends:
-    R(>= 3.2)
+    R(>= 3.4)
 Imports:
     GenomicRanges(>= 1.23.16),
     rtracklayer,
@@ -14,20 +14,20 @@ Imports:
     BiocGenerics(>= 0.1.0),
     dplyr,
     magrittr,
-    tidyverse,
     tibble,
     tidyr,
     ggplot2,
     metap,
     stats,
-    tools,
+    methods,
+    utils
 Suggests:
     knitr,
     rmarkdown,
     testthat,
-    BiocStyle,
-    rmarkdown
-Maintainer: julaiti shayiding <j.shahidin@gmail.com>
+    tidyverse,
+    BiocStyle
+Maintainer: julaiti shayiding <juratbupt@gmail.com>
 Description: This packages implements set of functions to retrieve overlapped
     enriched regions across multiple replicates in parallel (a.k.a, pair-wise),
     statistical method for overlapped regions. simultaneous presence of an
@@ -39,6 +39,7 @@ Description: This packages implements set of functions to retrieve overlapped
 License: GPL-3
 URL: https://github.com/julaiti/MSPC/
 BugReports: https://github.com/julaiti/MSPC/issues
+biocViews: Software, Sequencing,ChIPSeq, ChipOnChip
 LazyData: TRUE
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1

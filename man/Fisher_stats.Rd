@@ -2,29 +2,63 @@
 % Please edit documentation in R/Fisher_stats.R
 \name{Fisher_stats}
 \alias{Fisher_stats}
-\title{Fisher_stats}
+\title{Retrieve Fisher's global score through Fisher Method}
 \usage{
-Fisher_stats(.hitList, peakset)
+Fisher_stats(hitList, peakset)
 }
 \arguments{
-\item{.hitList}{overlap hit index for all enrichred regions that comply minimum overlapping peak requirement.}
+\item{hitList}{output of \link{filterByOverlapHit} take \code{isSuffOverlap} as \code{TRUE}. Only enriched regions
+that comply with minimum overlapping peak requirement can be further evaluated. We kept ERs
+that fulfill minimum overlapping requirement in \link[IRanges]{IntegerList}.}
 
-\item{peakset}{set of Chip-seq replicate imported and all peaks are stored in GRanges object, where all background noise pre-processed and won't involve in further downstream analysis.}
+\item{peakset}{output of \link{denoise_ERs}. Set of Chip-seq replicate imported and
+all peaks are stored in GRanges object, where all background noise won't be further processed.}
 }
 \value{
-numeric vector
+numeric vector, Global Fisher's score are in vector
 }
 \description{
-retrieve pvalue of ERs that comply minimum overlapping peak requirement and perfrom Fisher method
+we assess the presence of overlapping enrichred regions across multiple Chip-seq replicates.
+Therefore, the significance of overlapping enriched regions are rigorously combined
+with Fisher's method to obtain global Fisher score. Using \link[metap]{sumlog} to get
+global Fisher'score.
 }
 \details{
-Combine stringecy test to rigorously combined overlapping peaks
+Passed to \link{filterBycombStringency}
+}
+\examples{
+library(GenomicRanges)
+library(rtracklayer)
+library(metap)
 
-we assess the presence of overlapping enrichred regions across multiple Chip-seq replicates.
-Therefore, the significance of overlapping regions is rigorously combined with Fisher's method to obtain global Fisher score.
-However, in next workflow, we are using Fisher combined p-value against combined stringency threshold
-to evaluate combined stringency to all enriched regions in second level classification for all enriched regions.
-We set up combined stringency threshold for all enriched regions and getting confirmed / discarded peak set accordingly.
+## Example Peaks in GRanges
+bar = GRanges(seqnames=Rle("chr1", 3), ranges=IRanges(c(12,21,37), c(14,29,45)),
+              strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"), score=c(22, 6,13))
+cat = GRanges(seqnames=Rle("chr1", 6), ranges=IRanges(c(5,12,16,21,37,78), c(9,14,19,29,45,84)),
+              strand = Rle(c("*"),6),
+              rangeName=c("b1", "b2","b3","b4", "b6", "b7"), score=c(12, 5, 11, 8, 4, 3))
+## Add p.value as metadata column
+grs <- GRangesList("bar"=bar, "cat"=cat)
+grs <- lapply(grs, pvalueConversion)
+
+## Exclude background noise
+total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
+                         fileName = "noise", outDir = getwd())
+
+## peak overlapping
+hit <- peakOverlapping(total.ERs, FUN=which.max)
+
+## Retrieve pvalue of ERs that comply minimum overlapping peak requirement
+keepList <- filterByOverlapHit(hit, peakset = total.ERs,
+                               replicate.type = "Biological",
+                               isSuffOverlap=TRUE)
+
+\dontrun{
+## Global Fisher' score
+comb.p <- Fisher_stats(hitList = keepList , peakset = total.ERs)
+
+comb.p
+}
 }
 \author{
 Julaiti Shayiding
