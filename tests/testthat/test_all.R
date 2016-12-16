@@ -2,17 +2,12 @@
 
 library(MSPC)
 
-## check all ERs are stored in GRanges object
-
-context("check Chip-seq replicates imported and all ERs are stored as GRanges")
-test_that("readPeakFile", {
+## check file extension
+context("check context ...")
+test_that("getPeakFile", {
   files <- getPeakFile()
-  rdBED <- readPeakFiles(files)
-  lapply(rdBED, function(x) {
-    expect_true(is(x, "GRanges"))
+  expect_equal(length(files),8)
+  lapply(files, function(x) {
+    expect_match(grep("\\.bed$", x, value = TRUE), ".bed")
   })
 })
-
-
-
-
