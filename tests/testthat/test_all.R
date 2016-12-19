@@ -1,8 +1,10 @@
-## Bioconductor Package for Multiple Sample Peak Calling
+#' unit test for MSPC Package
+#'
 
 library(MSPC)
 
-## check file extension
+#' check file extension
+#'
 context("check context ...")
 test_that("getPeakFile", {
   files <- getPeakFile()
@@ -11,3 +13,6 @@ test_that("getPeakFile", {
     expect_match(grep("\\.bed$", x, value = TRUE), ".bed")
   })
 })
+
+
+

@@ -1,18 +1,21 @@
 #' Retrieve Fisher's global score through Fisher Method
 #'
-#' we assess the presence of overlapping enrichred regions across multiple Chip-seq replicates.
-#' Therefore, the significance of overlapping enriched regions are rigorously combined
-#' with Fisher's method to obtain global Fisher score. Using \link[metap]{sumlog} to get
-#' global Fisher'score.
+#' We assess the presence of overlapping enrichred regions across
+#' multiple Chip-seq replicates. Therefore, the significance of
+#' overlapping enriched regions are rigorously combined
+#' with Fisher's method to obtain global Fisher score.
+#' Using \link[metap]{sumlog} to get global Fisher'score.
 #'
 #' Passed to \link{filterBycombStringency}
 #'
-#' @param hitList output of \link{filterByOverlapHit} take \code{isSuffOverlap} as \code{TRUE}. Only enriched regions
-#' that comply with minimum overlapping peak requirement can be further evaluated. We kept ERs
+#' @param hitList output of \link{filterByOverlapHit} take \code{isSuffOverlap}
+#' as \code{TRUE}. Only Enriched regions that comply with
+#' minimum overlapping peak requirement can be further evaluated. We kept ERs
 #' that fulfill minimum overlapping requirement in \link[IRanges]{IntegerList}.
 #'
-#' @param peakset output of \link{denoise_ERs}. Set of Chip-seq replicate imported and
-#' all peaks are stored in GRanges object, where all background noise won't be further processed.
+#' @param peakset output of \link{denoise_ERs}.
+#' Set of Chip-seq replicate imported and all peaks are stored in GRanges object,
+#' where all background noise won't be further processed.
 #'
 #' @return numeric vector, Global Fisher's score are in vector
 #' @export
@@ -26,14 +29,19 @@
 #' @examples
 #' library(GenomicRanges)
 #' library(rtracklayer)
+#' library(XVector)
 #' library(metap)
 #'
 #' ## Example Peaks in GRanges
-#' bar = GRanges(seqnames=Rle("chr1", 3), ranges=IRanges(c(12,21,37), c(14,29,45)),
-#'               strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"), score=c(22, 6,13))
-#' cat = GRanges(seqnames=Rle("chr1", 6), ranges=IRanges(c(5,12,16,21,37,78), c(9,14,19,29,45,84)),
-#'               strand = Rle(c("*"),6),
-#'               rangeName=c("b1", "b2","b3","b4", "b6", "b7"), score=c(12, 5, 11, 8, 4, 3))
+#' bar=GRanges(
+#'   seqnames=Rle("chr1", 3),ranges=IRanges(c(12,21,37), c(14,29,45)),
+#'   strand=Rle(c("*"),3), rangeName=c("a1", "a2", "a3"), score=c(22, 6,13))
+#'
+#' cat=GRanges(
+#'   seqnames=Rle("chr1", 6),ranges=IRanges(c(5,12,16,21,37,78),
+#'   c(9,14,19,29,45,84)),
+#'   strand=Rle(c("*"),6), rangeName=c("b1", "b2","b3", "b4", "b6", "b7"),
+#'   score=c(12, 5, 11, 8, 4, 3))
 #' ## Add p.value as metadata column
 #' grs <- GRangesList("bar"=bar, "cat"=cat)
 #' grs <- lapply(grs, pvalueConversion)
@@ -49,15 +57,12 @@
 #' keepList <- filterByOverlapHit(hit, peakset = total.ERs,
 #'                                replicate.type = "Biological",
 #'                                isSuffOverlap=TRUE)
-#'
 #' \dontrun{
 #' ## Global Fisher' score
 #' comb.p <- Fisher_stats(hitList = keepList , peakset = total.ERs)
 #'
 #' comb.p
 #' }
-
-
 
 Fisher_stats <- function(hitList, peakset) {
   # input param checking
@@ -68,6 +73,10 @@ Fisher_stats <- function(hitList, peakset) {
     stop("Missing required argument hitList, please choose overlap hit list that comply minimum overlapping peak requirement!")
   }
   message("retrieve pvalue of peaks")
+  .get.pvalue <- function(hit, obj) {
+    # input param checking
+    res <- extractList(obj$p.value, hit)
+  }
   pval_List <- mapply(.get.pvalue, hitList, peakset)
   .helper.PV <- function(p.list) {
     res <- sapply(p.list, function(x) {
@@ -87,10 +96,4 @@ Fisher_stats <- function(hitList, peakset) {
   )
   comb.pval <- as.matrix(comb.pval)
   return(comb.pval)
-}
-
-.get.pvalue <- function(hit, obj) {
-  # input param checking
-  res <- extractList(obj$p.value, hit)
-  return(res)
 }

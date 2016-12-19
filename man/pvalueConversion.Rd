@@ -7,9 +7,11 @@
 pvalueConversion(x, pvalueBase = 10L)
 }
 \arguments{
-\item{x}{GRanges objects All Enriched regions (a.k.a, peaks) are stored in GRanges object.}
+\item{x}{GRanges objects All Enriched regions (a.k.a, peaks)
+are stored in GRanges object.}
 
-\item{pvalueBase}{User has option to set up p-value format (- log(p.value), -10 log(p.value), -100 log(p.value))}
+\item{pvalueBase}{User has option to set up
+p-value format (- log(p.value), -10 log(p.value), -100 log(p.value))}
 }
 \value{
 GRanges
@@ -18,12 +20,32 @@ GRanges
 Data conversion for significance of peak signal
 }
 \details{
-Some data sources provides Chip-seq enriched regions (A.K.A, peaks) without p-value under specific conditions.
-pvalueConversion is the utility function to do data conversion of peak' score as p-value
-In standard BED file, significant value of peak signal defined as Score column,
-Thus we need to convert it as p.value (- log(p.value), -10 log(p.value), -100 log(p.value))
+Some data sources provides Chip-seq enriched regions (A.K.A, peaks)
+without p-value under specific conditions.
+\code{pvalueConversion} is the utility function to do data conversion of
+peak' score as p-value. In standard BED file,
+significant value of peak signal defined as Score column,
+Thus we need to convert it
+as p.value (- log(p.value), -10 log(p.value), -100 log(p.value))
 
 Passed to \link{readPeakFiles}
+}
+\examples{
+library(GenomicRanges)
+
+## example GRanges object
+grs <- GRangesList(
+  bar=GRanges(
+    seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
+    strand=Rle(c("*"),3), rangeName=c("a1", "a2", "a3"), score=c(22,6,13)),
+  cat=GRanges(
+    seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
+    strand=Rle(c("*"),3), rangeName=c("b3","b6","b7"), score=c(14,9,17))
+)
+
+## pvalue conversion
+grs <- lapply(grs, pvalueConversion)
+
 }
 \author{
 Julaiti Shayiding

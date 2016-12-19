@@ -17,11 +17,21 @@ readPeakFiles(peakFolder, pvalueBase = 10L, verbose = FALSE)
 GRanges object
 }
 \description{
-readPeakFiles can read peak file in standard BED format using \link[rtracklayer]{import.bed}
-and stored in GRanges object, where several peak files can be read simultaneously using lapply
+readPeakFiles can read peak file in standard BED format
+using \link[rtracklayer]{import.bed} and stored in
+\link[GenomicRanges]{GRanges} object, where several peak files
+ can be read simultaneously using lapply
 }
 \details{
 Passed to \link{denoise_ERs}
+}
+\examples{
+require(rtracklayer)
+require(GenomicRanges)
+## get bed file
+files <- getPeakFile()[1:3]
+rd <- readPeakFiles(files)
+
 }
 \author{
 Julaiti Shayiding

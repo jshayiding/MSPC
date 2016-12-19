@@ -1,7 +1,9 @@
 #' Import Chip-seq replicates and all ERs are stored in GRanges objects.
 #'
-#' readPeakFiles can read peak file in standard BED format using \link[rtracklayer]{import.bed}
-#' and stored in GRanges object, where several peak files can be read simultaneously using lapply
+#' readPeakFiles can read peak file in standard BED format
+#' using \link[rtracklayer]{import.bed} and stored in
+#' \link[GenomicRanges]{GRanges} object, where several peak files
+#'  can be read simultaneously using lapply
 #'
 #' Passed to \link{denoise_ERs}
 #'
@@ -14,6 +16,14 @@
 #' @importFrom methods as
 #' @importFrom stats setNames
 #' @author  Julaiti Shayiding
+#'
+#' @examples
+#' require(rtracklayer)
+#' require(GenomicRanges)
+#' ## get bed file
+#' files <- getPeakFile()[1:3]
+#' rd <- readPeakFiles(files)
+#'
 
 readPeakFiles <- function(peakFolder, pvalueBase = 10L, verbose=FALSE) {
   # input param checking

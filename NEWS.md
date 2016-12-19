@@ -1,6 +1,14 @@
 # MSPC 0.99.0
 
-* Added a `NEWS.md` file to track changes to the package.
-
-
-
+o initial version with the following functions implemented:
+   + readPeakFiles
+   + pvalueConversion
+   + denoise_ERs
+   + peakOverlapping
+   + filterByOverlapHit
+   + Fisher_stats
+   + FilterBycombStringency
+   + FDR_stats
+   + getPlot
+   + export_ERs
+   + getPeakFile

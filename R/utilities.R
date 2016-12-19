@@ -7,6 +7,10 @@
 #' @export
 #' @importFrom IRanges gsub
 #' @author Julaiti Shayiding
+#'
+#' @examples
+#' ## get bed file
+#' files <- getPeakFile()
 
 getPeakFile <- function() {
   dir <- system.file("extdata", package="MSPC")

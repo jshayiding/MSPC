@@ -13,6 +13,10 @@ list of Chip-seq replicates' name
 Input peak bed files can be detected by system.file(),
 and let package example data available for use.
 }
+\examples{
+## get bed file
+files <- getPeakFile()
+}
 \author{
 Julaiti Shayiding
 }
