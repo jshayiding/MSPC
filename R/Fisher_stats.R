@@ -59,12 +59,13 @@
 #' keepList <- filterByOverlapHit(hit, peakset = total.ERs,
 #'                                replicate.type = "Biological",
 #'                                isSuffOverlap=TRUE)
+#'
+#' ## strange bug, set below example as static for time being
 #' \dontrun{
 #' ## Global Fisher' score
 #' comb.p <- Fisher_stats(hitList = keepList , peakset = total.ERs)
 #' comb.p
 #' }
-
 
 Fisher_stats <- function(hitList, peakset) {
     # input param checking

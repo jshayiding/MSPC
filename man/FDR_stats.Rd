@@ -18,8 +18,7 @@ in \link[GenomicRanges]{GRanges} objects.}
 
 \item{pAdjustMethod}{pvalue adjustment method}
 
-\item{fdr}{parameter for false discovery rate;
-User can tune false discovery rate.}
+\item{fdr}{parameter for false discovery rate;}
 
 \item{replicate.type}{A charcter vector used to select
 type of Chip-seq replicate ( Biological / Technical replicate).}

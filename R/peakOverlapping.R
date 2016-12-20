@@ -31,11 +31,10 @@
 #' GRanges object, where all background signal were excluded.
 #'
 #' @param FUN user has options to keep most stringent(with loest p-value)
-#' or least stringent(highest p-value) peak
-#' if multiple overlapping were detected.
+#' or least stringent(highest p-value) peakif multiple overlapping ERs
+#' were detected. By default, keep most stringent overlaped ER.
 #'
-#' By default, keep most stringent overlaped peak.
-#' @return overlap-hit list in \link[IRanges]{IntegerList}
+#' @return overlap-hit list in \link[IRanges]{IntegerList} object
 #' @export
 #' @importFrom GenomicRanges findOverlaps
 #' @importFrom XVector extractList

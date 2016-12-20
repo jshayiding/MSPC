@@ -29,7 +29,6 @@
 #' in \link[GenomicRanges]{GRanges} objects.
 #'
 #' @param fdr parameter for false discovery rate;
-#' User can tune false discovery rate.
 #'
 #' @param pAdjustMethod pvalue adjustment method
 #'
@@ -38,10 +37,11 @@
 #'
 #' @return output of multiple testing correction can be exported as
 #' BED file by using \link[rtracklayer]{export.bed} method.
+#'
 #' @export
 #' @importFrom stats p.adjust
 #' @importFrom dplyr anti_join
-#' @importFrom utils write.csv
+#' @importFrom rtracklayer export.bed
 #' @importFrom rtracklayer as.data.frame
 #' @author Julaiti Shayiding
 #'
@@ -131,9 +131,9 @@ FDR_stats <- function(peakList_A, peakList_B, pAdjustMethod="BH",
     })
     byFDR <- lapply(byFDR, unique)
     rslt <- lapply(names(byFDR), function(elm) {
-        mapply(write.csv,
+        mapply(export.bed,
                byFDR[[elm]],
-               paste0(elm, ".", names(byFDR[[elm]]), ".csv"))
+               paste0(elm, ".", names(byFDR[[elm]]), ".bed"))
         })
 
     return(rslt)

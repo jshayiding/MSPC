@@ -10,11 +10,10 @@
 #'
 #' Passed to \link{readPeakFiles}
 #'
-#' @title pvalueCoversion
 #' @param x GRanges objects All Enriched regions (a.k.a, peaks)
 #' are stored in GRanges object.
 #'
-#' @param pvalueBase User has option to set up
+#' @param pvalueBase User has option to select
 #' p-value format (- log(p.value), -10 log(p.value), -100 log(p.value))
 #'
 #' @return GRanges

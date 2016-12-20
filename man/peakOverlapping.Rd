@@ -12,13 +12,11 @@ set of Chip-seq replicate imported and all peaks are stored in
 GRanges object, where all background signal were excluded.}
 
 \item{FUN}{user has options to keep most stringent(with loest p-value)
-or least stringent(highest p-value) peak
-if multiple overlapping were detected.
-
-By default, keep most stringent overlaped peak.}
+or least stringent(highest p-value) peakif multiple overlapping ERs
+were detected. By default, keep most stringent overlaped ER.}
 }
 \value{
-overlap-hit list in \link[IRanges]{IntegerList}
+overlap-hit list in \link[IRanges]{IntegerList} object
 }
 \description{
 We assess the presense of overlapping enriched regions

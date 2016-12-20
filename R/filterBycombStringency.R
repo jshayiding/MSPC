@@ -5,9 +5,11 @@
 #' a single sample, which is implemented though the Fisher method.
 #' The significace of ovelapping enriched regions is rigorously combined
 #' with the Fisher's method to obtain global Fisher score.
-#' However, we need to check whether each ERs fulfill requirement of combined
-#' stringency test. Global Fisher' socre of enriched regions below
-#' combined stringency threshold, are rescued, we call this as confirmed peak;
+#' However, given the output of \link{filterByOverlapHit} take
+#' \code{isSuffOverlap} as \code{TRUE}, we need to check whether
+#' each ERs fulfill requirement of combined stringency test.
+#' Global Fisher' socre of enriched regions below combined stringency
+#' threshold, are rescued, we call this as confirmed peak;
 #' Meanwhile Peaks are discarded, due to failing for Fisher's combined test.
 #'
 #' Passed to \link{FDR_stats}
@@ -15,13 +17,16 @@
 #' @param ERs output of \link{denoise_ERs},
 #' set of enriched regions stored in GRanges,
 #' where background signal won't be further evaluated.
+#'
 #' @param .hitList output of \link{filterByOverlapHit},
 #' take \code{isSuffOverlap} as \code{TRUE}, only all enriched regions
 #' that comply minimum overlapping peak requirements are further evaluated.
+#'
 #' @param cmbstrgThreshold combined stringency threshold
 #' against all enriched regions p-value, so we could identify
 #' whether ERs fulfill stringency test,
 #' and result can be set of confirmed ERs, and discarded ERs respectively.
+#'
 #' @param isFisherPass logical vector that check whether
 #' all enriched regins are passed in Fisher' combined method.
 #'
@@ -33,8 +38,8 @@
 #'
 #' @return list of ERs in \link[GenomicRanges]{GRanges} object.
 #' \code{isFisherPass} is \code{TRUE},
-#'
 #' output is list of confirmed ERs thourgh Fisher's combined test.
+#'
 #' \code{isFisherPass} is \code{FALSE},
 #' output is list of discarded ERs due to failing for combined stringency test.
 #'
@@ -79,6 +84,8 @@
 #'     hit, peakset = total.ERs, replicate.type = "Biological",
 #'     isSuffOverlap=TRUE
 #' )
+#'
+#' ## strange bug when running below code; set it static for time being
 #'
 #' \dontrun{
 #' ## Get global Fisher's score

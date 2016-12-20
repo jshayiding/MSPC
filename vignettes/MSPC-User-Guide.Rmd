@@ -337,7 +337,7 @@ weak ERs by the output of \link{filterBycombStringency} function.
 Due to repeated evidence across multiple replicates can compensate for 
 lower sigificance in single sample, an enriched regions might be 
 multiple times confirmed or discarded according to different parameter usages. 
-This is one of key characteristic of out method that assign an enriched regions 
+This is one of key characteristic of our method that assign an enriched regions 
 in different set, in addition which provides analysis features that allow 
 performing further assessments and functional analyses on the identified ERs.
 **MSPC** provides `export_ERs` function to identify stringent/weak enriched 

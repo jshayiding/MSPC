@@ -4,7 +4,7 @@
 \alias{denoise_ERs}
 \title{Exclude all background signal (a.k.a, noise) from input Chip-seq samples}
 \usage{
-denoise_ERs(peakGRs = NULL, tau.w = 1e-04, fileName = "",
+denoise_ERs(peakGRs = NULL, tau.w = 1e-04, fileName = "noise",
   outDir = getwd(), verbose = FALSE)
 }
 \arguments{
@@ -16,9 +16,10 @@ all enrichred regions' pvalue above this thrshold,
 are considered background signal (a.k.a, noise)}
 
 \item{fileName}{user has option to name background signal
-by their own preference.}
+by their own preference. by default name it as "noise"}
 
-\item{outDir}{user control where the exported BED files goes}
+\item{outDir}{only noise can be exported as standard BED file;
+user has an option to control where the exported files goes}
 
 \item{verbose}{control whether the output is printed or not}
 }

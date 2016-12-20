@@ -2,7 +2,7 @@
 % Please edit documentation in R/pvalueConversion.R
 \name{pvalueConversion}
 \alias{pvalueConversion}
-\title{pvalueCoversion}
+\title{Data conversion for significance of peak signal}
 \usage{
 pvalueConversion(x, pvalueBase = 10L)
 }
@@ -10,16 +10,13 @@ pvalueConversion(x, pvalueBase = 10L)
 \item{x}{GRanges objects All Enriched regions (a.k.a, peaks)
 are stored in GRanges object.}
 
-\item{pvalueBase}{User has option to set up
+\item{pvalueBase}{User has option to select
 p-value format (- log(p.value), -10 log(p.value), -100 log(p.value))}
 }
 \value{
 GRanges
 }
 \description{
-Data conversion for significance of peak signal
-}
-\details{
 Some data sources provides Chip-seq enriched regions (A.K.A, peaks)
 without p-value under specific conditions.
 \code{pvalueConversion} is the utility function to do data conversion of
@@ -27,7 +24,8 @@ peak' score as p-value. In standard BED file,
 significant value of peak signal defined as Score column,
 Thus we need to convert it
 as p.value (- log(p.value), -10 log(p.value), -100 log(p.value))
-
+}
+\details{
 Passed to \link{readPeakFiles}
 }
 \examples{

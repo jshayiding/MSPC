@@ -33,8 +33,8 @@ classified as \code{discardedERs} in \link[GenomicRanges]{GRangesList}}
 \value{
 list of ERs in \link[GenomicRanges]{GRanges} object.
 \code{isFisherPass} is \code{TRUE},
-
 output is list of confirmed ERs thourgh Fisher's combined test.
+
 \code{isFisherPass} is \code{FALSE},
 output is list of discarded ERs due to failing for combined stringency test.
 }
@@ -44,9 +44,11 @@ Chip-seq replicates can compensate for a lower significance in
 a single sample, which is implemented though the Fisher method.
 The significace of ovelapping enriched regions is rigorously combined
 with the Fisher's method to obtain global Fisher score.
-However, we need to check whether each ERs fulfill requirement of combined
-stringency test. Global Fisher' socre of enriched regions below
-combined stringency threshold, are rescued, we call this as confirmed peak;
+However, given the output of \link{filterByOverlapHit} take
+\code{isSuffOverlap} as \code{TRUE}, we need to check whether
+each ERs fulfill requirement of combined stringency test.
+Global Fisher' socre of enriched regions below combined stringency
+threshold, are rescued, we call this as confirmed peak;
 Meanwhile Peaks are discarded, due to failing for Fisher's combined test.
 }
 \details{
@@ -87,6 +89,8 @@ keepList <- filterByOverlapHit(
     hit, peakset = total.ERs, replicate.type = "Biological",
     isSuffOverlap=TRUE
 )
+
+## strange bug when running below code; set it static for time being
 
 \dontrun{
 ## Get global Fisher's score

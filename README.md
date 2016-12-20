@@ -39,5 +39,4 @@ decrease of the stringency criterion, leveraging on the principal that repeated 
 compensating for weak evidence. This packages jointly analyzes the enriched regions of multiple
 replicates, distinguishing between biological and technical replicates, and accepting user defined
 parameters. Goal of developing R/Bioconductor package of Multiple Sample Peak Calling, to implement 
-our algorithm in R and make sure R community get benefit from our method to solve issue raised by high
-through genomic data. 
+our algorithm in R and make sure R community get benefit from our method to solve issue raised by high-throughput genomic data. 

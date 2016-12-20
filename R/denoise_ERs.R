@@ -14,12 +14,17 @@
 #'
 #' @param peakGRs list of Chip-seq replicate imported and
 #' all enriched regions stored in \code{GRanges} objects
+#'
 #' @param tau.w threshold value for weakly enriched peak,
 #' all enrichred regions' pvalue above this thrshold,
 #' are considered background signal (a.k.a, noise)
+#'
 #' @param fileName user has option to name background signal
-#' by their own preference.
-#' @param outDir user control where the exported BED files goes
+#' by their own preference. by default name it as "noise"
+#'
+#' @param outDir only noise can be exported as standard BED file;
+#' user has an option to control where the exported files goes
+#'
 #' @param verbose control whether the output is printed or not
 #'
 #' @return list of enriched regions stored in \link[GenomicRanges]{GRanges}
@@ -56,7 +61,7 @@
 #' ## Explore all stringent and weak enriched regions
 #' total.ERs
 
-denoise_ERs <- function(peakGRs=NULL,tau.w = 1.0E-04,fileName ="",
+denoise_ERs <- function(peakGRs=NULL,tau.w = 1.0E-04,fileName ="noise",
                         outDir = getwd(),verbose = FALSE) {
     # check input param
     if (missing(peakGRs)) {
