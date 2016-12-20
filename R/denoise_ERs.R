@@ -34,14 +34,17 @@
 #'
 #' ## example peaks in GRanges object
 #' bar=GRanges(
-#'   seqnames=Rle("chr1", 3),ranges=IRanges(c(12,21,37), c(14,29,45)),
-#'   strand=Rle(c("*"),3), rangeName=c("a1", "a2", "a3"), score=c(22, 6,13))
+#'     seqnames=Rle("chr1", 3),
+#'     ranges=IRanges(c(12,21,37), c(14,29,45)), strand=Rle(c("*"),3),
+#'     rangeName=c("a1", "a2", "a3"), score=c(22, 6,13)
+#' )
 #'
 #' cat=GRanges(
-#'   seqnames=Rle("chr1", 6),
-#'   ranges=IRanges(c(5,12,16,21,37,78), c(9,14,19,29,45,84)),
-#'   strand=Rle(c("*"),6), rangeName=c("b1", "b2","b3", "b4", "b6", "b7"),
-#'   score=c(12, 5, 11, 8, 4, 3))
+#'     seqnames=Rle("chr1", 6),
+#'     ranges=IRanges(c(5,12,16,21,37,78), c(9,14,19,29,45,84)),
+#'     strand=Rle(c("*"),6), rangeName=c("b1", "b2","b3", "b4", "b6", "b7"),
+#'     score=c(12, 5, 11, 8, 4, 3)
+#' )
 #'
 #' ## Add p.value as metadata column
 #' grs <- GRangesList("bar"=bar, "cat"=cat)
@@ -49,35 +52,38 @@
 #'
 #' ## Exclude background noise
 #' total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
-#'                          fileName = "noise", outDir = getwd())
+#'                         fileName = "noise", outDir = getwd())
 #' ## Explore all stringent and weak enriched regions
 #' total.ERs
 
-denoise_ERs <- function(peakGRs, tau.w = 1.0E-04,
-                        fileName = "", outDir = getwd(), verbose = FALSE) {
-  # check input param
-  if (missing(peakGRs)) {
-    stop("Missing required argument peakGRs, please choose imported Chip-seq replicates!")
-  }
-  stopifnot(inherits(peakGRs[[1L]], "GRanges"))
-  stopifnot(length(peakGRs)>0)
-  stopifnot(is.numeric(tau.w))
-  if (verbose) {
-    cat(">> filter out all background noise peaks whose pvalue above threshold \t\t",
-        format(Sys.time(), "%Y-%m-%d %X"), "\n")
-  }
-  if(!dir.exists(outDir)) {
-    dir.create(file.path(outDir))
-    setwd(file.path(outDir))
-  }
-  res <- lapply(seq_along(peakGRs), function(x) {
-    gr <- peakGRs[[x]]
-    grNM <- names(peakGRs)[x]
-    drop <- gr[gr$p.value > tau.w]
-    export.bed(drop, sprintf("%s/%s.%s.bed", outDir, grNM, fileName))
-    keep <- gr[gr$p.value <= tau.w]
-    return(keep)
-  })
-  rslt <- setNames(res, names(peakGRs))
-  return(rslt)
+denoise_ERs <- function(peakGRs=NULL, tau.w = 1.0E-04,
+                        fileName = "",
+                        outDir = getwd(),verbose = FALSE) {
+    # check input param
+    if (missing(peakGRs)) {
+        stop("Missing required argument peakGRs,
+             please choose imported Chip-seq replicates!")
+    }
+    stopifnot(inherits(peakGRs[[1L]], "GRanges"))
+    stopifnot(length(peakGRs)>0)
+    stopifnot(is.numeric(tau.w))
+    if (verbose) {
+        cat(">> filter out all background noise peaks whose pvalue
+            above threshold \t\t", format(Sys.time(),
+                                          "%Y-%m-%d %X"), "\n")
+    }
+    if(!dir.exists(outDir)) {
+        dir.create(file.path(outDir))
+        setwd(file.path(outDir))
+    }
+    res <- lapply(seq_along(peakGRs), function(x) {
+        gr <- peakGRs[[x]]
+        grNM <- names(peakGRs)[x]
+        drop <- gr[gr$p.value > tau.w]
+        export.bed(drop, sprintf("%s/%s.%s.bed", outDir, grNM, fileName))
+        keep <- gr[gr$p.value <= tau.w]
+        return(keep)
+    })
+    rslt <- setNames(res, names(peakGRs))
+    return(rslt)
 }

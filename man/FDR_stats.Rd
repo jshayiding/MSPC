@@ -55,23 +55,24 @@ require(rtracklayer)
 require(XVector)
 
 ## prepare list of confirmedERs, discardedERs
-
 confirmedERs <- GRangesList(
-  cat = GRanges(
-    seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
-    strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"), score=c(14,9,17)),
-  bar = GRanges(
-    seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
-    strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"), score=c(22,6,13))
+    cat = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
+        strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"),
+        score=c(14,9,17)),
+    bar = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
+        strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"),
+        score=c(22,6,13))
 )
 
 discardedERs <- GRangesList(
-  bar = GRanges(
-    seqnames=Rle("chr1", 3),ranges=IRanges(c(6,25,40), c(12,33,49)),
-    strand = Rle(c("*"),3), rangeName=c("a2","a5","a8"), score=c(3,2,4)),
-  cat = GRanges(
-    seqnames=Rle("chr1", 3),ranges=IRanges(c(15,19,47), c(18,28,55)),
-    strand = Rle(c("*"),3), rangeName=c("b4","b6","b9"), score=c(1,3,6))
+    bar = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(6,25,40), c(12,33,49)),
+        strand = Rle(c("*"),3), rangeName=c("a2","a5","a8"), score=c(3,2,4)),
+    cat = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(15,19,47), c(18,28,55)),
+        strand = Rle(c("*"),3), rangeName=c("b4","b6","b9"), score=c(1,3,6))
 )
 
 ## add pvalue
@@ -83,9 +84,10 @@ confirmedDF <- lapply(confirmedERs, as.data.frame)
 discardedDF <- lapply(discardedERs, as.data.frame)
 
 ## call FDR_stats to create output set
-BH_output <- FDR_stats(
-  peakList_A = confirmedDF, peakList_B = discardedDF,
-  pAdjustMethod = "BH", fdr = 0.05, replicate.type = "Technical")
+BH_output <- FDR_stats(peakList_A = confirmedDF,
+                       peakList_B = discardedDF,
+                       pAdjustMethod = "BH", fdr = 0.05,
+                       replicate.type = "Technical")
 }
 \author{
 Julaiti Shayiding

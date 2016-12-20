@@ -56,20 +56,23 @@
 #'
 #' ## example peak interval in GRanges objects
 #' bar=GRanges(
-#'   seqnames=Rle("chr1", 3),ranges=IRanges(c(12,21,37), c(14,29,45)),
-#'   strand=Rle(c("*"),3), rangeName=c("a1", "a2", "a3"), score=c(22, 6,13))
+#'     seqnames=Rle("chr1", 3),ranges=IRanges(c(12,21,37), c(14,29,45)),
+#'     strand=Rle(c("*"),3), rangeName=c("a1", "a2", "a3"), score=c(22, 6,13)
+#' )
 #'
 #' cat=GRanges(
-#'   seqnames=Rle("chr1", 6),ranges=IRanges(c(5,12,16,21,37,78),
-#'   c(9,14,19,29,45,84)),
-#'   strand=Rle(c("*"),6), rangeName=c("b1", "b2","b3", "b4", "b6", "b7"),
-#'   score=c(12, 5, 11, 8, 4, 3))
+#'     seqnames=Rle("chr1", 6),ranges=IRanges(c(5,12,16,21,37,78),
+#'     c(9,14,19,29,45,84)),
+#'     strand=Rle(c("*"),6), rangeName=c("b1", "b2","b3", "b4", "b6", "b7"),
+#'     score=c(12, 5, 11, 8, 4, 3)
+#' )
 #'
 #' foo=GRanges(
-#'   seqnames=Rle("chr1", 7),ranges=IRanges(c(2,8,18,35, 42,59,81),
-#'   c(6,13,27,40,46,63,114)),
-#'   strand=Rle(c("*"),7), rangeName=c("c1", "c2", "c3", "c4","c5","c8","c11"),
-#'   score=c(2.1, 3, 5.1, 3.5, 7, 12, 10))
+#'     seqnames=Rle("chr1", 7),ranges=IRanges(c(2,8,18,35, 42,59,81),
+#'     c(6,13,27,40,46,63,114)), strand=Rle(c("*"),7),
+#'     rangeName=c("c1", "c2", "c3", "c4","c5","c8","c11"),
+#'     score=c(2.1, 3, 5.1, 3.5, 7, 12, 10)
+#' )
 #' ## create GRangesList
 #' grs <- GRangesList("bar"=bar, "cat"=cat, "foo"=foo)
 #'
@@ -84,32 +87,32 @@
 #'
 
 peakOverlapping <- function(peakset, FUN=which.max) {
-  # input param checking
-  if (missing(peakset)) {
-    stop("Missing required argument peakset,
-         please choose the set of pre-processed peaks!")
-  }
-  if (missing(FUN)) {
-    stop("Missing required argument FUN,
-         please specify the peak type to be selected from multiple overlapping ERs!")
-  }
-  stopifnot(inherits(peakset[[1]], "GRanges"))
-  res <- list()
-  for(i in seq_along(peakset)) {
-    que <- peakset[[i]]
-    queHit <- as(findOverlaps(que), "List")
-    supHit <- lapply(peakset[- i], function(ele_) {
-      ans <- as(findOverlaps(que, ele_), "List")
-      out.idx0 <- as(FUN(extractList(ele_$score, ans)), "List")
-      out.idx0 <- out.idx0[!is.na(out.idx0),]
-      ans <- ans[out.idx0]
-    })
-    res[[i]] = DataFrame(c(list(que=queHit), sup=supHit))
-    names(res[[i]]) = c(names(peakset[i]),names(peakset[- i]))
-  }
-  rslt <- lapply(res, function(x) as.matrix(x[names(res[[1]])]))
-  rslt <- DataFrame(rbind(rslt[[1]],
-                          unique(do.call("rbind", rslt[2: length(rslt)]))))
-  rslt <- lapply(rslt, function(x) as(x, "CompressedIntegerList"))
-  return(rslt)
+    # input param checking
+    if (missing(peakset)) {
+        stop("Missing required argument peakset,
+             please choose the set of pre-processed peaks!")
+    }
+    if (missing(FUN)) {
+        stop("Missing required argument FUN, please specify the
+             peak type to be selected from multiple overlapping ERs!")
+    }
+    stopifnot(inherits(peakset[[1]], "GRanges"))
+    res <- list()
+    for(i in seq_along(peakset)) {
+        que <- peakset[[i]]
+        queHit <- as(findOverlaps(que), "List")
+        supHit <- lapply(peakset[- i], function(ele_) {
+            ans <- as(findOverlaps(que, ele_), "List")
+            out.idx0 <- as(FUN(extractList(ele_$score, ans)), "List")
+            out.idx0 <- out.idx0[!is.na(out.idx0),]
+            ans <- ans[out.idx0]
+        })
+        res[[i]] = DataFrame(c(list(que=queHit), sup=supHit))
+        names(res[[i]]) = c(names(peakset[i]),names(peakset[- i]))
+    }
+    rslt <- lapply(res, function(x) as.matrix(x[names(res[[1]])]))
+    rslt <- DataFrame(rbind(rslt[[1]],
+                            unique(do.call("rbind", rslt[2: length(rslt)]))))
+    rslt <- lapply(rslt, function(x) as(x, "CompressedIntegerList"))
+    return(rslt)
 }

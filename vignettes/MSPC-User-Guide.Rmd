@@ -6,9 +6,9 @@ output:
   BiocStyle::html_document:
     toc: yes
 
+csl: nature.csl
 package: "`r pkg_ver('MSPC')`"
 bibliography: bibliography.bib
-csl: nature.csl
 
 vignette: >
   %\VignetteIndexEntry{MSPC-User-Guide} 
@@ -94,12 +94,15 @@ all enriched regions comply minimum overlapping peak requirement. Through Fisher
 method, Obtained combined p-value of enriched regions will against combined
 stringency threshold, which yield set of rescued enriched regions through
 Fisher' combined test, and set of discarded ERs that failing for combined
-stringency test. Finally, we need to do intermediate set purification before
-applying BH correction test to control false discovery rate, for example, if
-user choose `Technical` replicates in their input, then enriched regions passed
-in one test but failed next successive test, these peaks won't be involbed in
-output. To help user deeper insight about analysis result, `create_outputset`
-function also provides graphical view of output.
+stringency test. Given output of `filterBycombStringency`, we could identify 
+stringent/weak enriched regiosn by using stringent permissive threshold, 
+output can be exported as standard BED file.Finally, we need to do 
+intermediate set purification before applying BH correction test to 
+control false discovery rate, for example, if user choose `Technical` 
+replicates in their input, then enriched regions passed in one test but 
+failed next successive test, these peaks won't be involbed in output. 
+To help user deeper insight about analysis result, `getPlot` function 
+also provides graphical view of output.
 
 # Downstream analysis workflow for Chip-seq experiments
 
@@ -369,7 +372,7 @@ help pages ?`getPlot` function.
 
 
 ```{r 'getPlot', fig.height=8, fig.width=10}
-# graphical view of output set, corresponding stack bar is generated for each file bar
+# graphical view of output set
 confirmed <- lapply(confirmedERs, as.data.frame)
 discarded <- lapply(DiscardedERs, as.data.frame)
 
@@ -392,10 +395,11 @@ method.
 We distinguish between technical and biological replicates of Chip-seq 
 experiments. If user choose input replicate's type as `Technical`, 
 An enriched regions passed in one test (Passed with minimum overlapping 
-peak requirement test) but failed in anohter ( failed with Fisher's combined test),
-then this ERs won't be included in output. For this reason, we decided to perform 
-set purification to check whether ERs are both existed in confirmed or 
-discarded ERs set. Using `anti_join` method from `dplyr` packages make this easy. 
+peak requirement test) but failed in anohter 
+( failed with Fisher's combined test), then this ERs won't be included 
+in output. For this reason, we decided to perform set purification to 
+check whether ERs are both existed in confirmed or discarded ERs set. 
+Using `anti_join` method from `dplyr` packages make this easy. 
 
 
 ```{r 'FDR_stats'}

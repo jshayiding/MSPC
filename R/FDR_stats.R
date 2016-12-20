@@ -51,23 +51,24 @@
 #' require(XVector)
 #'
 #' ## prepare list of confirmedERs, discardedERs
-#'
 #' confirmedERs <- GRangesList(
-#'   cat = GRanges(
-#'     seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
-#'     strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"), score=c(14,9,17)),
-#'   bar = GRanges(
-#'     seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
-#'     strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"), score=c(22,6,13))
+#'     cat = GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
+#'         strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"),
+#'         score=c(14,9,17)),
+#'     bar = GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
+#'         strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"),
+#'         score=c(22,6,13))
 #' )
 #'
 #' discardedERs <- GRangesList(
-#'   bar = GRanges(
-#'     seqnames=Rle("chr1", 3),ranges=IRanges(c(6,25,40), c(12,33,49)),
-#'     strand = Rle(c("*"),3), rangeName=c("a2","a5","a8"), score=c(3,2,4)),
-#'   cat = GRanges(
-#'     seqnames=Rle("chr1", 3),ranges=IRanges(c(15,19,47), c(18,28,55)),
-#'     strand = Rle(c("*"),3), rangeName=c("b4","b6","b9"), score=c(1,3,6))
+#'     bar = GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(6,25,40), c(12,33,49)),
+#'         strand = Rle(c("*"),3), rangeName=c("a2","a5","a8"), score=c(3,2,4)),
+#'     cat = GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(15,19,47), c(18,28,55)),
+#'         strand = Rle(c("*"),3), rangeName=c("b4","b6","b9"), score=c(1,3,6))
 #' )
 #'
 #' ## add pvalue
@@ -79,53 +80,58 @@
 #' discardedDF <- lapply(discardedERs, as.data.frame)
 #'
 #' ## call FDR_stats to create output set
-#' BH_output <- FDR_stats(
-#'   peakList_A = confirmedDF, peakList_B = discardedDF,
-#'   pAdjustMethod = "BH", fdr = 0.05, replicate.type = "Technical")
+#' BH_output <- FDR_stats(peakList_A = confirmedDF,
+#'                        peakList_B = discardedDF,
+#'                        pAdjustMethod = "BH", fdr = 0.05,
+#'                        replicate.type = "Technical")
 
 
-FDR_stats <- function(peakList_A, peakList_B, pAdjustMethod="BH", fdr = 0.05
-                      , replicate.type=c("Biological", "Technical")) {
-  # check input param
-  if (missing(peakList_A)) {
-    stop("Missing required argument peakList_A, please choose the list of all confirmed enriched regions in previous workflow!")
-  }
-  if (missing(peakList_B)) {
-    stop("Missing required argument peakList_B, please choose the list of all discarded enriched regions in previous workflow!")
-  }
-  pAdjustMethod = match.arg(pAdjustMethod)
-  replicate.type = match.arg(replicate.type)
-  stopifnot(is.numeric(fdr))
-  message("set purification on set of confirmed, discarded peaks")
-  ## peakList_A, peakList_B must be casted to data.frame
-  peakList_A <- lapply(peakList_A, as.data.frame)
-  peakList_B <- lapply(peakList_B, as.data.frame)
-  # if (!dir.exists(outDir)) {
-  #   dir.create(file.path(outDir))
-  # }
-  if(replicate.type=="Biological") {
-    setPurf <- peakList_A
-  } else {
-    setPurf <- Map(anti_join, peakList_A, peakList_B)
-  }
-  setPurf <- lapply(setPurf, function(x) as(x, "GRanges"))
-  byFDR <- lapply(setPurf, function(ele_) {
-    if(is.null(ele_$p.value)) {
-      stop("p.value is required")
-    } else {
-      p <- ele_$p.value
-      ele_$p.adj <- p.adjust(p, method = "BH")
-      ele_ <- split(ele_,
-                     ifelse(ele_$p.adj <= fdr,
-                            "BH_Pass", "BH_Failed"))
-      ele_
+FDR_stats <- function(peakList_A, peakList_B, pAdjustMethod="BH",
+                      fdr = 0.05,
+                      replicate.type=c("Biological", "Technical")) {
+    # check input param
+    if (missing(peakList_A)) {
+        stop("Missing required argument peakList_A, please choose the
+             list of all confirmed enriched regions in previous workflow!")
     }
-  })
-  byFDR <- lapply(byFDR, unique)
-  rslt <- lapply(names(byFDR), function(elm) {
-    mapply(write.csv,
-           byFDR[[elm]],
-           paste0(elm, ".", names(byFDR[[elm]]), ".csv"))
-  })
-  return(rslt)
+    if (missing(peakList_B)) {
+        stop("Missing required argument peakList_B, please choose the
+             list of all discarded enriched regions in previous workflow!")
+    }
+    pAdjustMethod = match.arg(pAdjustMethod)
+    replicate.type = match.arg(replicate.type)
+    stopifnot(is.numeric(fdr))
+    message("set purification on set of confirmed, discarded peaks")
+    ## peakList_A, peakList_B must be casted to data.frame
+    peakList_A <- lapply(peakList_A, as.data.frame)
+    peakList_B <- lapply(peakList_B, as.data.frame)
+    # if (!dir.exists(outDir)) {
+        #   dir.create(file.path(outDir))
+    # }
+    if(replicate.type=="Biological") {
+        setPurf <- peakList_A
+    } else {
+        setPurf <- Map(anti_join, peakList_A, peakList_B)
+    }
+    setPurf <- lapply(setPurf, function(x) as(x, "GRanges"))
+    byFDR <- lapply(setPurf, function(ele_) {
+        if(is.null(ele_$p.value)) {
+            stop("p.value is required")
+        } else {
+            p <- ele_$p.value
+            ele_$p.adj <- p.adjust(p, method = "BH")
+            ele_ <- split(ele_,
+                          ifelse(ele_$p.adj <= fdr,
+                                 "BH_Pass", "BH_Failed"))
+            ele_
+        }
+    })
+    byFDR <- lapply(byFDR, unique)
+    rslt <- lapply(names(byFDR), function(elm) {
+        mapply(write.csv,
+               byFDR[[elm]],
+               paste0(elm, ".", names(byFDR[[elm]]), ".csv"))
+        })
+
+    return(rslt)
 }

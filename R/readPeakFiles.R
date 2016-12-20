@@ -26,20 +26,21 @@
 #'
 
 readPeakFiles <- function(peakFolder, pvalueBase = 10L, verbose=FALSE) {
-  # input param checking
-  if (missing(peakFolder)) {
-    stop("Missing required argument peakFolder, please choose input Chip-seq replicates in BED file!")
-  }
-  if (verbose)
-    cat(">> reading all peakfiles from given folder...\t\t\t",
-        format(Sys.time(), "%Y-%m-%d %X"), "\n")
-  stopifnot(length(peakFolder)>0)
-  stopifnot(is.numeric(pvalueBase))
-  f.read <- lapply(peakFolder, function(ele_) {
-    .gr <- as(import.bed(ele_), "GRanges")
-    if(is.null(.gr$p.value)) {
-      .gr <- pvalueConversion(.gr)
+    # input param checking
+    if (missing(peakFolder)) {
+        stop("Missing required argument peakFolder, please
+             choose input Chip-seq replicates in BED file!")
     }
-  })
-  return(f.read)
+    if (verbose)
+        cat(">> reading all peakfiles from given folder...\t\t\t",
+            format(Sys.time(), "%Y-%m-%d %X"), "\n")
+    stopifnot(length(peakFolder)>0)
+    stopifnot(is.numeric(pvalueBase))
+    f.read <- lapply(peakFolder, function(ele_) {
+        .gr <- as(import.bed(ele_), "GRanges")
+        if(is.null(.gr$p.value)) {
+            .gr <- pvalueConversion(.gr)
+        }
+    })
+    return(f.read)
 }

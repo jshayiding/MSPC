@@ -29,12 +29,14 @@
 #'
 #' ## example GRanges object
 #' grs <- GRangesList(
-#'   bar=GRanges(
-#'     seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
-#'     strand=Rle(c("*"),3), rangeName=c("a1", "a2", "a3"), score=c(22,6,13)),
-#'   cat=GRanges(
-#'     seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
-#'     strand=Rle(c("*"),3), rangeName=c("b3","b6","b7"), score=c(14,9,17))
+#'     bar=GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
+#'         strand=Rle(c("*"),3), rangeName=c("a1", "a2", "a3"),
+#'         score=c(22,6,13)),
+#'     cat=GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
+#'         strand=Rle(c("*"),3), rangeName=c("b3","b6","b7"),
+#'         score=c(14,9,17))
 #' )
 #'
 #' ## pvalue conversion
@@ -42,16 +44,16 @@
 #'
 
 pvalueConversion <- function(x, pvalueBase = 10L) {
-  # input param checking
-  stopifnot(class(x) == "GRanges")
-  stopifnot(is.numeric(pvalueBase))
-  # explore score of all features
-  if(is.null(x$pvalue)){
-    x$p.value <- 10^(score(x)/(- pvalueBase))
-    #colnames(mcols(x))[3] <- "p.value"
-  } else {
-    x
-  }
-  res <- x
-  return(res)
+    # input param checking
+    stopifnot(class(x) == "GRanges")
+    stopifnot(is.numeric(pvalueBase))
+    # explore score of all features
+    if(is.null(x$pvalue)){
+        x$p.value <- 10^(score(x)/(- pvalueBase))
+        #colnames(mcols(x))[3] <- "p.value"
+    } else {
+        x
+    }
+    res <- x
+    return(res)
 }
