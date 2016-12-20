@@ -17,7 +17,7 @@ getPeakFile <- function() {
     files <- list.files(dir)
     ChipPeak <- gsub(pattern='wgEncode\\d+_(\\w+_\\w+)_.*',
                      replacement='\\1',files)
-    patt <- sub("_Chip.+", "", ChipPeak)
+    ChipPeak <- sub("_Chip.+", "", ChipPeak)
     res <- paste(dir, files, sep="/")
     res <- as.list(res)
     names(res) <- ChipPeak
