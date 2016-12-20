@@ -80,10 +80,13 @@
 #' discardedDF <- lapply(discardedERs, as.data.frame)
 #'
 #' ## call FDR_stats to create output set
-#' BH_output <- FDR_stats(peakList_A = confirmedDF,
-#'                        peakList_B = discardedDF,
-#'                        pAdjustMethod = "BH", fdr = 0.05,
-#'                        replicate.type = "Technical")
+#' BH_output <- FDR_stats(
+#'     peakList_A = confirmedDF,peakList_B = discardedDF,
+#'     pAdjustMethod = "BH", fdr = 0.05,
+#'     replicate.type = "Technical")
+#'
+#' ## Explore output of multiple testting correction
+#' BH_output
 
 
 FDR_stats <- function(peakList_A, peakList_B, pAdjustMethod="BH",

@@ -56,8 +56,7 @@
 #' ## Explore all stringent and weak enriched regions
 #' total.ERs
 
-denoise_ERs <- function(peakGRs=NULL, tau.w = 1.0E-04,
-                        fileName = "",
+denoise_ERs <- function(peakGRs=NULL,tau.w = 1.0E-04,fileName ="",
                         outDir = getwd(),verbose = FALSE) {
     # check input param
     if (missing(peakGRs)) {

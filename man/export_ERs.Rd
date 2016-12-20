@@ -67,9 +67,8 @@ discardedDF <- lapply(discardedERs, as.data.frame)
 
 ## Identify and Export Stringent/Weak ERs
 
-output <- export_ERs( peakList_A=confirmedDF,
-                      peakList_B=discardedDF, tau.s=1.0E-08)
-
+output <- export_ERs(
+    peakList_A=confirmedDF,peakList_B=discardedDF, tau.s=1.0E-08)
 ## Explore ERs in different group
 print(output)
 

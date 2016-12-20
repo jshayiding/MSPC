@@ -66,16 +66,20 @@
 #' grs <- lapply(grs, pvalueConversion)
 #'
 #' ## Exclude background noise
-#' total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
-#'                          fileName = "noise", outDir = getwd())
+#' total.ERs <- denoise_ERs(
+#'     peakGRs = grs, tau.w = 1.0E-04, fileName = "noise",
+#'     outDir = getwd()
+#' )
 #'
 #' ## peak overlapping
 #' hit <- peakOverlapping(total.ERs, FUN=which.max)
 #'
 #' ## Retrieve pvalue of ERs that comply minimum overlapping peak requirement
-#' keepList <- filterByOverlapHit(hit, peakset = total.ERs,
-#'                                replicate.type = "Biological",
-#'                                isSuffOverlap=TRUE)
+#' keepList <- filterByOverlapHit(
+#'     hit, peakset = total.ERs, replicate.type = "Biological",
+#'     isSuffOverlap=TRUE
+#' )
+#'
 #' \dontrun{
 #' ## Get global Fisher's score
 #' comb.p <- Fisher_stats(hitList = keepList, peakset = total.ERs)
@@ -87,9 +91,9 @@
 #' cmbstrgThreshold=1.0E-08, comb.p, isFisherPass = FALSE)
 #' }
 
-filterBycombStringency <- function(ERs, .hitList,
-                                   cmbstrgThreshold=1.0E-08 ,
-                                   isFisherPass=TRUE) {
+filterBycombStringency <- function(ERs,.hitList,
+                                   cmbstrgThreshold=1.0E-08,
+                                   isFisherPass=TRUE){
     # input param checking
     if (missing(ERs)) {
         stop("Missing required argument ERs,
