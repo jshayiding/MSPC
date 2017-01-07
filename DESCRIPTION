@@ -17,9 +17,9 @@ Imports:
     tibble,
     tidyr,
     ggplot2,
-    metap,
     stats,
     methods,
+    data.table,
     utils
 Suggests:
     knitr,
