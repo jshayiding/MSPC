@@ -53,37 +53,16 @@
 #' require(S4Vectors)
 #' require(XVector)
 #'
-#' ## example peak interval in GRanges objects
-#' bar=GRanges(
-#'     seqnames=Rle("chr1", 3),ranges=IRanges(c(12,21,37), c(14,29,45)),
-#'     strand=Rle(c("*"),3), rangeName=c("a1", "a2", "a3"), score=c(22, 6,13)
-#' )
+#' ## read peak file as GRanges object
+#' files <- getPeakFile()[7:8]
+#' grs <- readPeakFiles(files, pvalueBase=1L)
 #'
-#' cat=GRanges(
-#'     seqnames=Rle("chr1", 6),ranges=IRanges(c(5,12,16,21,37,78),
-#'     c(9,14,19,29,45,84)),
-#'     strand=Rle(c("*"),6), rangeName=c("b1", "b2","b3", "b4", "b6", "b7"),
-#'     score=c(12, 5, 11, 8, 4, 3)
-#' )
-#'
-#' foo=GRanges(
-#'     seqnames=Rle("chr1", 7),ranges=IRanges(c(2,8,18,35, 42,59,81),
-#'     c(6,13,27,40,46,63,114)), strand=Rle(c("*"),7),
-#'     rangeName=c("c1", "c2", "c3", "c4","c5","c8","c11"),
-#'     score=c(2.1, 3, 5.1, 3.5, 7, 12, 10)
-#' )
-#' ## create GRangesList
-#' grs <- GRangesList("bar"=bar, "cat"=cat, "foo"=foo)
-#'
-#' ## add p.value as metadata column
-#' grs <- lapply(grs, pvalueConversion)
-#'
-#' ## Exclude all background noise
+#' ## Exclude background noise
 #' total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
-#'                          fileName = "noise", outDir = getwd())
+#'                         fileName = "noise", outDir = getwd())
 #' ## find peak overlapping
 #' hit <- peakOverlapping(total.ERs, FUN=which.max)
-#'
+#' hit
 
 peakOverlapping <- function(peakset, FUN=which.max) {
     # input param checking
@@ -96,6 +75,7 @@ peakOverlapping <- function(peakset, FUN=which.max) {
              peak type to be selected from multiple overlapping ERs!")
     }
     stopifnot(inherits(peakset[[1]], "GRanges"))
+    stopifnot(length(peakset)>1)
     res <- list()
     for(i in seq_along(peakset)) {
         que <- peakset[[i]]
