@@ -43,34 +43,28 @@
 #'     cat = GRanges(
 #'         seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
 #'         strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"),
-#'         score=c(14,9,17)),
+#'         score=c(14,9,17),p.value=c(1e-14,1e-09,1e-17)),
 #'     bar = GRanges(
 #'         seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
 #'         strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"),
-#'         score=c(22,6,13))
+#'         score=c(22,6,13),p.value=c(1e-22,1e-06,1e-13))
 #' )
 #'
 #' discardedERs <- GRangesList(
 #'     bar = GRanges(
 #'         seqnames=Rle("chr1", 3),ranges=IRanges(c(6,25,40), c(12,33,49)),
-#'         strand = Rle(c("*"),3), rangeName=c("a2","a5","a8"), score=c(3,2,4)),
+#'         strand = Rle(c("*"),3), rangeName=c("a2","a5","a8"),
+#'         score=c(3,2,14),p.value=c(1e-03,1e-02,1e-14)),
 #'     cat = GRanges(
 #'         seqnames=Rle("chr1", 3),ranges=IRanges(c(15,19,47), c(18,28,55)),
-#'         strand = Rle(c("*"),3), rangeName=c("b4","b6","b9"), score=c(1,3,6))
+#'         strand = Rle(c("*"),3), rangeName=c("b4","b6","b9"),
+#'         score=c(3,13,16),p.value=c(1e-03,1e-13,1e-16))
 #' )
-#'
-#' ## add pvalue
-#' confirmedERs <- lapply(confirmedERs, pvalueConversion)
-#' discardedERs <- lapply(discardedERs, pvalueConversion)
-#'
-#' ## cast GRangesList to data.frame list
-#' confirmedDF <- lapply(confirmedERs, as.data.frame)
-#' discardedDF <- lapply(discardedERs, as.data.frame)
 #'
 #' ## Identify and Export Stringent/Weak ERs
 #'
 #' output <- export_ERs(
-#'     peakList_A=confirmedDF,peakList_B=discardedDF, tau.s=1.0E-08)
+#'     peakList_A=confirmedERs,peakList_B=discardedERs, tau.s=1.0E-08)
 
 #' ## Explore ERs in different group
 #' print(output)
