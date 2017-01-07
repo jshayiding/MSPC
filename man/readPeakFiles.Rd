@@ -4,12 +4,13 @@
 \alias{readPeakFiles}
 \title{Import Chip-seq replicates and all ERs are stored in GRanges objects.}
 \usage{
-readPeakFiles(peakFolder, pvalueBase = 10L, verbose = FALSE)
+readPeakFiles(peakFolder, pvalueBase = 1L, verbose = FALSE)
 }
 \arguments{
 \item{peakFolder}{set of ChipSeq peak replicate in BED format file}
 
-\item{pvalueBase}{user has options to choose the p-value format}
+\item{pvalueBase}{User has option to select
+p-value format (- log(p.value), -10 log(p.value), -100 log(p.value))}
 
 \item{verbose}{logical that control whether the output is printed or not}
 }
@@ -20,7 +21,9 @@ GRanges object
 readPeakFiles can read peak file in standard BED format
 using \link[rtracklayer]{import.bed} and stored in
 \link[GenomicRanges]{GRanges} object, where several peak files
- can be read simultaneously using lapply
+can be read simultaneously using lapply. Note that some data
+sources provides Chip-seq enriched regions (A.K.A, peaks)
+without p-value under specific conditions.
 }
 \details{
 Passed to \link{denoise_ERs}
@@ -30,8 +33,7 @@ require(rtracklayer)
 require(GenomicRanges)
 ## get bed file
 files <- getPeakFile()[1:3]
-rd <- readPeakFiles(files)
-
+rd <- readPeakFiles(files, pvalueBase=1L)
 }
 \author{
 Julaiti Shayiding
