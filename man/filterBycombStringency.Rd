@@ -59,49 +59,27 @@ require(GenomicRanges)
 require(rtracklayer)
 require(XVector)
 
-## Prepare example peak Interval in GRanges objects
-bar=GRanges(
-    seqnames=Rle("chr1", 3),ranges=IRanges(c(12,21,37), c(14,29,45)),
-    strand=Rle(c("*"),3), rangeName=c("a1", "a2", "a3"), score=c(22, 6,13)
-)
-
-cat=GRanges(
-    seqnames=Rle("chr1", 6),ranges=IRanges(c(5,12,16,21,37,78),
-    c(9,14,19,29,45,84)),
-    strand=Rle(c("*"),6), rangeName=c("b1", "b2","b3", "b4", "b6", "b7"),
-    score=c(12, 5, 11, 8, 4, 3)
-)
-## Add p.value as metadata column
-grs <- GRangesList("bar"=bar, "cat"=cat)
-grs <- lapply(grs, pvalueConversion)
+# read peak file as GRanges object
+files <- getPeakFile()[7:8]
+grs <- readPeakFiles(files, pvalueBase=1L)
 
 ## Exclude background noise
-total.ERs <- denoise_ERs(
-    peakGRs = grs, tau.w = 1.0E-04, fileName = "noise",
-    outDir = getwd()
-)
-
-## peak overlapping
+total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
+                        fileName = "noise", outDir = getwd())
+## find peak overlapping
 hit <- peakOverlapping(total.ERs, FUN=which.max)
 
-## Retrieve pvalue of ERs that comply minimum overlapping peak requirement
-keepList <- filterByOverlapHit(
-    hit, peakset = total.ERs, replicate.type = "Biological",
-    isSuffOverlap=TRUE
-)
-
-## strange bug when running below code; set it static for time being
-
-\dontrun{
-## Get global Fisher's score
-comb.p <- Fisher_stats(hitList = keepList, peakset = total.ERs)
+## check whether each ERs comply with minimum overlapping peak requirement
+keepList <- filterByOverlapHit(hit, peakset = total.ERs,
+                               replicate.type = "Biological",
+                               isSuffOverlap=TRUE)
 
 ## check whether ERs fulfill combined stringency test
 Confirmed.ERs <- filterBycombStringency(total.ERs, keepList,
-cmbstrgThreshold=1.0E-08, comb.p, isFisherPass = TRUE)
-Discarded.ERs <- filterBycombStringency(total.ERs, keepList,
-cmbstrgThreshold=1.0E-08, comb.p, isFisherPass = FALSE)
-}
+cmbstrgThreshold=1.0E-08, isFisherPass = TRUE)
+fisherDiscERs <- filterBycombStringency(total.ERs, keepList,
+cmbstrgThreshold=1.0E-08, isFisherPass = FALSE)
+
 }
 \author{
 Julaiti Shayiding
