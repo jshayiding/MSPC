@@ -7,7 +7,7 @@
     if(getRversion() >= "2.15.1")
         utils::globalVariables(
             c(".","p.value","peakStringency","original_list",
-              "id","Replicate", "isConfirmed","n","output")
+              "id","Replicate", "isConfirmed","n","output","name")
         )
     invisible()
 }
