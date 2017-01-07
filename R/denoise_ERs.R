@@ -37,23 +37,9 @@
 #' require(rtracklayer)
 #' require(GenomicRanges)
 #'
-#' ## example peaks in GRanges object
-#' bar=GRanges(
-#'     seqnames=Rle("chr1", 3),
-#'     ranges=IRanges(c(12,21,37), c(14,29,45)), strand=Rle(c("*"),3),
-#'     rangeName=c("a1", "a2", "a3"), score=c(22, 6,13)
-#' )
-#'
-#' cat=GRanges(
-#'     seqnames=Rle("chr1", 6),
-#'     ranges=IRanges(c(5,12,16,21,37,78), c(9,14,19,29,45,84)),
-#'     strand=Rle(c("*"),6), rangeName=c("b1", "b2","b3", "b4", "b6", "b7"),
-#'     score=c(12, 5, 11, 8, 4, 3)
-#' )
-#'
-#' ## Add p.value as metadata column
-#' grs <- GRangesList("bar"=bar, "cat"=cat)
-#' grs <- lapply(grs, pvalueConversion)
+#' ## read peak file as GRanges object
+#' files <- getPeakFile()[7:8]
+#' grs <- readPeakFiles(files, pvalueBase=1L)
 #'
 #' ## Exclude background noise
 #' total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
