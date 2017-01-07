@@ -26,16 +26,16 @@ knitr::opts_chunk$set(tidy         = FALSE,
 ```
 
 ```{r vignetteSetup, echo=FALSE, message=FALSE, warning = FALSE}
+library(MSPC)
 library(rtracklayer)
 library(GenomicRanges)
-library(MSPC)
+library(S4Vectors)
+library(XVector)
 library(tidyr)
 library(tidyverse)
 library(dplyr)
 library(magrittr)
-library(metap)
-library(S4Vectors)
-library(XVector)
+library(data.table)
 ```
 
 # Abstract 
@@ -129,10 +129,10 @@ print(getPeakFile())
 ```{r 'readBedAsGR'}
 ## load all peak files as GRanges objects
 bedfiles <- getPeakFile()
-myData <- readPeakFiles(peakFolder = bedfiles, pvalueBase = 1, verbose = FALSE)
+myData <- readPeakFiles(peakFolder = bedfiles, pvalueBase = 1L, verbose = FALSE)
 
 ## take subset for myData
-inputDat <- myData[1:3]
+inputDat <- myData[4:6]
 inputDat
 
 ```
@@ -266,8 +266,8 @@ print(initDiscERs)
 
 **MSPC** provides `Fisher_stats` helper function to retrieve the pvalue of all
 enriched regions that comply with minimum overlapping peak requirement, with
-correct gemotry of overlap hit list, then using `sumlog` method from `metap`
-packages to get global Fisher score. Note that obtained global fisher score is
+correct gemotry of overlap hit list, then using `fisherCmbp` function to get 
+global Fisher score. Note that obtained global fisher score is
 correctly match the original gemotry of overlap-hit list by parallel.
 `Fisher_stats` accept two paramter : paramter `hitList` is the output of
 `filterByOverlapHit`, list of ERs that comply minimum overlapping peak
@@ -322,7 +322,8 @@ fisherDiscERs <- filterBycombStringency(
   ERs = total.ERs, .hitList = keepList,
   cmbstrgThreshold = 1.0E-08, isFisherPass = FALSE)
 
-DiscardedERs <- mapply(c, fisherDiscERs, initDiscERs)
+## get all discarded ERs set that result of two different permissice threshold test
+DiscardedERs <- mergeDiscERs(initDiscERs, fisherDiscERs)
 print(DiscardedERs)
 ```
 
@@ -371,7 +372,7 @@ For the further detailed information, please review
 help pages ?`getPlot` function. 
 
 
-```{r 'getPlot', fig.height=8, fig.width=10}
+```{r 'getPlot', fig.height=8, fig.width=12}
 # graphical view of output set
 confirmed <- lapply(confirmedERs, as.data.frame)
 discarded <- lapply(DiscardedERs, as.data.frame)
