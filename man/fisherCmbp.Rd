@@ -24,6 +24,6 @@ cmbP <- apply(df,1,fisherCmbp)
 
 }
 \author{
-Julaiti
+Julaiti Shayiding
 }
 
