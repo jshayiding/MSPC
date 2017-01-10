@@ -29,7 +29,8 @@ require(GenomicRanges)
 initDiscERs <- GRangesList(
     cat = GRanges(
         seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
-        strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"),score=c(14,9,17)),
+        strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"),
+        score=c(14,9,17)),
     bar = GRanges(
         seqnames=Rle("chr1",2),ranges=IRanges(c(1,16), c(4,23)),
         strand = Rle(c("*"),2), rangeName=c("a1","a3"),

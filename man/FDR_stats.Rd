@@ -76,14 +76,9 @@ discardedERs <- GRangesList(
         score=c(11,3,6),p.value=c(1e-11,1e-03,1e-06))
 )
 
-
-## cast GRangesList to data.frame list
-confirmedDF <- lapply(confirmedERs, as.data.frame)
-discardedDF <- lapply(discardedERs, as.data.frame)
-
 ## call FDR_stats to create output set
 BH_output <- FDR_stats(
-    peakList_A = confirmedDF,peakList_B = discardedDF,
+    peakList_A = confirmedERs,peakList_B = discardedERs,
     pAdjustMethod = "BH", fdr = 0.05,
     replicate.type = "Technical")
 

@@ -54,14 +54,9 @@ discardedERs <- GRangesList(
         score=c(11,3,6),p.value=c(1e-11,1e-03,1e-06))
 )
 
-
-## cast GRangesList to data.frame list
-confirmedDF <- lapply(confirmedERs, as.data.frame)
-discardedDF <- lapply(discardedERs, as.data.frame)
-
 ## visualize output
 output <- getPlot(
-  peakList_A=confirmedDF, peakList_B=discardedDF, tau.s=1.0E-08)
+  peakList_A=confirmedERs, peakList_B=discardedERs, tau.s=1.0E-08)
 
 }
 \author{
