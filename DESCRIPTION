@@ -1,7 +1,7 @@
 Package: MSPC
 Type: Package
 Title: Using combined evidence from replicates to evaluate ChIP-seq peaks
-Version: 0.99.2
+Version: 0.99.3
 Author: Julaiti Shayiding
 Depends:
     R(>= 3.4)
