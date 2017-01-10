@@ -2,7 +2,6 @@
 
 o initial version with the following functions implemented:
    + readPeakFiles
-   + pvalueConversion
    + denoise_ERs
    + peakOverlapping
    + filterByOverlapHit
@@ -12,3 +11,6 @@ o initial version with the following functions implemented:
    + getPlot
    + export_ERs
    + getPeakFile
+   + get.pvalue
+   + fisherCmbp
+   + mergeDiscERs

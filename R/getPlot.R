@@ -8,7 +8,7 @@
 #' @param peakList_A output of \link{filterBycombStringency},
 #' is set of all confirmed ERs in \link[GenomicRanges]{GRanges} objects.
 #'
-#' @param peakList_B output of \link{filterBycombStringency},
+#' @param peakList_B output of \link{mergeDiscERs},
 #' is set of all discarded ERs in \link[GenomicRanges]{GRanges} objects.
 #'
 #' @param tau.s permissive threshold for stringent enriched regions,
