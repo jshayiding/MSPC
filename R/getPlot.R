@@ -33,6 +33,7 @@
 #' @importFrom ggplot2 position_stack
 #' @importFrom ggplot2 geom_text
 #' @importFrom ggplot2 theme
+#' @importFrom ggplot2 label_wrap_gen
 #' @importFrom ggplot2 element_text
 #' @author Julaiti Shayiding
 #'
@@ -65,14 +66,9 @@
 #'         score=c(11,3,6),p.value=c(1e-11,1e-03,1e-06))
 #' )
 #'
-#'
-#' ## cast GRangesList to data.frame list
-#' confirmedDF <- lapply(confirmedERs, as.data.frame)
-#' discardedDF <- lapply(discardedERs, as.data.frame)
-#'
 #' ## visualize output
 #' output <- getPlot(
-#'   peakList_A=confirmedDF, peakList_B=discardedDF, tau.s=1.0E-08)
+#'   peakList_A=confirmedERs, peakList_B=discardedERs, tau.s=1.0E-08)
 #'
 
 
@@ -109,7 +105,10 @@ getPlot <- function(peakList_A, peakList_B, tau.s=1.0E-08) {
             bind_rows(., setNames(., c("output", "Replicate", "letters", "n")))
         } %>%
         ggplot(aes(x=Replicate, y=n, fill=output)) + geom_col() +
-        facet_wrap(~letters, scales = "free_x")+
+        facet_wrap(~paste0(substr(letters, 1, 20), "\n",
+                           substr(letters, 21, nchar(letters))),
+                   labeller = label_wrap_gen(15),scales = "free_x")+
         geom_text(aes(label=n), position=position_stack(vjust = 0.85))+
-        theme(strip.text = element_text(size = 10))
+        theme(strip.text = element_text(size = 10),
+              axis.text.x = element_text(angle=70, vjust=0.6))
 }
