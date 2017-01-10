@@ -16,6 +16,9 @@
 #'
 #' Passed to \link{filterBycombStringency}
 #'
+#' ERs set that failed from minimum overlapping peak requirement also
+#' passed to \link{mergeDiscERs}
+#'
 #' @param .ovHit output of \link{peakOverlapping},
 #' where all overlap-hit pair is in \link[IRanges]{IntegerList}
 #'

@@ -54,6 +54,9 @@ kept in \link[IRanges]{IntegerList} objects.
 }
 \details{
 Passed to \link{filterBycombStringency}
+
+ERs set that failed from minimum overlapping peak requirement also
+passed to \link{mergeDiscERs}
 }
 \examples{
 require(GenomicRanges)

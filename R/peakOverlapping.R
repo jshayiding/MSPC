@@ -62,7 +62,8 @@
 #'                         fileName = "noise", outDir = getwd())
 #' ## find peak overlapping
 #' hit <- peakOverlapping(total.ERs, FUN=which.max)
-#' hit
+#' ## explore overlap-hit index table
+#' print(hit)
 
 peakOverlapping <- function(peakset, FUN=which.max) {
     # input param checking

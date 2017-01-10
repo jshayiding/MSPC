@@ -1,5 +1,6 @@
 #' Merge discarded ERs from different level permissive threshold
 #'
+#'
 #' @param discER_A discarded ERs that failed from minimum
 #' overlapping peak requirement
 #'

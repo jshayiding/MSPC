@@ -31,7 +31,7 @@ getPeakFile <- function() {
 #' @export
 #' @importFrom stats pchisq
 #' @importFrom stats na.omit
-#' @author Julaiti
+#' @author Julaiti Shayiding
 #'
 #' @examples
 #' ## pvalue vector

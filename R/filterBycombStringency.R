@@ -13,6 +13,7 @@
 #' Meanwhile Peaks are discarded, due to failing for Fisher's combined test.
 #'
 #' Passed to \link{FDR_stats}
+#' ERs that failed from Fisher method also passed to \link{mergeDiscERs}
 #'
 #' @param ERs output of \link{denoise_ERs},
 #' set of enriched regions stored in GRanges,
@@ -42,6 +43,9 @@
 #'
 #' \code{isFisherPass} is \code{FALSE},
 #' output is list of discarded ERs due to failing for combined stringency test.
+#' ERs set that failed from Fisher method must be merged with ERs that
+#' failed from minimum overlapping peak requirement, to do so,
+#' using \link{mergeDiscERs}
 #'
 #' @export
 #' @importFrom XVector extractList

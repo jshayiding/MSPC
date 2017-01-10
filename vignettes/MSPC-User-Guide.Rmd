@@ -60,7 +60,7 @@ threshold.
 Chip-seq replicates and generate multiple output set. **MSPC** facilitates
 jointly analyzes the enriched regions of multiple replicates, distinguishing
 between biological and technical replicates, and accepting user defined
-parameters, and provides graphic view of output.
+parameters, and provides graphic view of output. 
 
 # Citation
 
@@ -142,7 +142,7 @@ inputDat
 Some data sources provides Chip-seq enriched regions (A.K.A, peaks) without
 p-value under specific conditions. Based on UCSC's BED format file
 specification, peak's siginificance can be represented as score. **MSPC**
-provides utility function `pvalueConversion` to make data conversion of peak'
+provides function to make data conversion of peak'
 score as p-value, where pvalue can be represented -1*log10(score),
 -10*log10(score), -100*log10(score), so user has option to choose cutom pvalue
 format for input peak files. The reason adding p.value as new metadata column in
@@ -150,8 +150,7 @@ each enriched region (a.k.a, peak), we're going to evaluate each ERs by its
 p.value with different level permissive threshold. The dataset in this vignette
 were downloaded from Encode consortium, due to original dataset is rather big,
 therefore, I took sample peaks from each bed file for the sake of facilitating
-vignette compilation. For detailed information, please see ? `pvalueConversion`
-method.
+vignette compilation. 
 
 ## Clean up all background signal from input Chip-seq samples
 
@@ -192,7 +191,7 @@ objects) by element-wise to find overlap is quite inefficient. **MSPC** provides
 regions from multiple Chip-seq replicates as `List` object where all overlap-hit
 is returned. However, it may happen that an enriched region(A.K.A, peak or ER)
 from current Chip-seq replicate overlap multiple ERs from other supported
-replicates. `.peakOverlapping` retrieve only one overlapping peak from each
+replicates. `peakOverlapping` retrieve only one overlapping peak from each
 supported Chip-seq replicate if multiple overlapping were detected.
 `peakOverlapping` function accept two parameter, first argument `peakset` is set
 of enrichred regions in GRanges objects, which treated as `GRangesList` object,
@@ -203,7 +202,8 @@ peak from multiple overlapped ERs. `FUN` could call `which.max` or `which.min`.
 Note that identifying set of overlappinng peaks across multiple Chip-seq
 replicates can give rise to ambiguities, espectially number of selected 
 input bed files n>2, so global approach can depends on the 
-order of the input Chip-seq replicates. For the further detailed information, 
+order of the input Chip-seq replicates, permuting sample is needed when 
+identifying overlapping peak. For the further detailed information, 
 please review help page ?`peakOverlapping` function.
 
 ```{r 'peakOverlapping'}

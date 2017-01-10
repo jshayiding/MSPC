@@ -62,7 +62,8 @@ total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
                         fileName = "noise", outDir = getwd())
 ## find peak overlapping
 hit <- peakOverlapping(total.ERs, FUN=which.max)
-hit
+## explore overlap-hit index table
+print(hit)
 }
 \author{
 Julaiti Shayiding
