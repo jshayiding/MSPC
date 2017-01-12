@@ -43,6 +43,7 @@
 #' @importFrom dplyr anti_join
 #' @importFrom rtracklayer export.bed
 #' @importFrom rtracklayer as.data.frame
+#' @importFrom methods hasArg
 #' @author Julaiti Shayiding
 #'
 #' @examples
@@ -87,11 +88,11 @@ FDR_stats <- function(peakList_A, peakList_B, pAdjustMethod="BH",
                       fdr = 0.05,
                       replicate.type=c("Biological", "Technical")) {
     # check input param
-    if (missing(peakList_A)) {
+    if (!hasArg(peakList_A)) {
         stop("Missing required argument peakList_A, please choose the
              list of all confirmed enriched regions in previous workflow!")
     }
-    if (missing(peakList_B)) {
+    if (!hasArg(peakList_B)) {
         stop("Missing required argument peakList_B, please choose the
              list of all discarded enriched regions in previous workflow!")
     }

@@ -11,8 +11,9 @@ export_ERs(peakList_A, peakList_B, tau.s = 1e-08)
 is set of ERs that fulfill combined stringency test,
 and rescued by Fisher's method, also known as confirmed ERs.}
 
-\item{peakList_B}{output of \link{filterBycombStringency},
-is set of discarded ERs that failing for combined stringency test}
+\item{peakList_B}{output of \link{mergeDiscERs},
+is set of discarded ERs that failing from combined stringency test
+and minimum overlapping peak requirement}
 
 \item{tau.s}{permissive threshold value for stringent ERs,
 all ERs' pvalue below this value, are considered as stringent ERs.}

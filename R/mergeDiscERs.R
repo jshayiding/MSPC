@@ -12,6 +12,7 @@
 #' all discarded ERs are stored in \link[GenomicRanges]{GRanges} object
 #'
 #' @export
+#' @importFrom methods hasArg
 #' @author Julaiti Shayiding
 #'
 #' @examples
@@ -44,9 +45,10 @@
 
 mergeDiscERs <- function(discER_A, discER_B) {
     # sanity check
-    if(missing(discER_A) | missing(discER_B)) {
-        stop("please select discarded ERs that required to be merged")
-    }
+    if(!hasArg(discER_A))
+        stop("required param discER_A is missing")
+    if(!hasArg(discER_B))
+        stop("required param discER_B is missing")
     res <- suppressWarnings(
         mapply(c, discER_A, discER_B)
     )

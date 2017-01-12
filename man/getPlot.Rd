@@ -10,7 +10,7 @@ getPlot(peakList_A, peakList_B, tau.s = 1e-08)
 \item{peakList_A}{output of \link{filterBycombStringency},
 is set of all confirmed ERs in \link[GenomicRanges]{GRanges} objects.}
 
-\item{peakList_B}{output of \link{filterBycombStringency},
+\item{peakList_B}{output of \link{mergeDiscERs},
 is set of all discarded ERs in \link[GenomicRanges]{GRanges} objects.}
 
 \item{tau.s}{permissive threshold for stringent enriched regions,

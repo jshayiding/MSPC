@@ -12,7 +12,7 @@ FDR_stats(peakList_A, peakList_B, pAdjustMethod = "BH", fdr = 0.05,
 is set of all confirmed ERs
 in \link[GenomicRanges]{GRanges} objects.}
 
-\item{peakList_B}{output of \link{filterBycombStringency},
+\item{peakList_B}{output of \link{mergeDiscERs},
 is set of all discarded ERs
 in \link[GenomicRanges]{GRanges} objects.}
 
