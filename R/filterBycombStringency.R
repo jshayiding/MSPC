@@ -55,6 +55,7 @@
 #' @importFrom data.table setDT
 #' @importFrom data.table .N
 #' @importFrom data.table .I
+#' @importFrom methods hasArg
 #' @author Julaiti Shayiding
 #'
 #' @examples
@@ -88,13 +89,16 @@ filterBycombStringency <- function(ERs,.hitList,
                                    cmbstrgThreshold=1.0E-08,
                                    isFisherPass=TRUE){
     # input param checking
-    if (missing(ERs)) {
-        stop("Missing required argument ERs,
-             please choose the set of pre-processed peaks!")
+    if(!hasArg(ERs)) {
+        stop("required argument ERs is missing,
+             please choose the set of ERs without noise!")
     }
-    if (missing(.hitList)) {
-        stop("please choose the set of overlap hit index
+    if(!hasArg(.hitList)) {
+        stop("please choose the set of list of overlap hit index for ERs
              that comply minimum overlapping peak requirement!")
+    }
+    if(!hasArg(cmbstrgThreshold)) {
+        stop("combined stringency threshold must be specified")
     }
     stopifnot(is.numeric(cmbstrgThreshold))
     comb.p <- Fisher_stats(.hitList, ERs)

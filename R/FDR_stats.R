@@ -88,13 +88,14 @@ FDR_stats <- function(peakList_A, peakList_B, pAdjustMethod="BH",
                       fdr = 0.05,
                       replicate.type=c("Biological", "Technical")) {
     # check input param
-    if (!hasArg(peakList_A)) {
-        stop("Missing required argument peakList_A, please choose the
-             list of all confirmed enriched regions in previous workflow!")
+    # sanity check for input param
+    if(!hasArg(peakList_A)) {
+        stop("required arguments is missing,
+             please choose set of all confirmed ERs")
     }
-    if (!hasArg(peakList_B)) {
-        stop("Missing required argument peakList_B, please choose the
-             list of all discarded enriched regions in previous workflow!")
+    if(!hasArg(peakList_B)) {
+        stop("required arguments is missing,
+             please choose set of discarded ERs")
     }
     pAdjustMethod = match.arg(pAdjustMethod)
     replicate.type = match.arg(replicate.type)

@@ -35,6 +35,7 @@
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 label_wrap_gen
 #' @importFrom ggplot2 element_text
+#' @importFrom methods hasArg
 #' @author Julaiti Shayiding
 #'
 #' @examples
@@ -74,13 +75,14 @@
 
 getPlot <- function(peakList_A, peakList_B, tau.s=1.0E-08) {
     # input param checking
-    if (missing(peakList_A)) {
-        stop("Missing required argument peakList_A, please choose
-             the list of all confirmed enriched regions in previous workflow!")
+    # sanity check for input param
+    if(!hasArg(peakList_A)) {
+        stop("required arguments is missing,
+             please choose set of confirmed ERs")
     }
-    if (missing(peakList_B)) {
-        stop("Missing required argument peakList_B, please choose
-             the list of all discarded enriched regions in previous workflow!")
+    if(!hasArg(peakList_B)) {
+        stop("required arguments is missing,
+             please choose set of all discarded ERs")
     }
     stopifnot(is.numeric(tau.s))
     # cast peakList_A, peakList_B in data.frame

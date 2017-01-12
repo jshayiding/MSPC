@@ -322,7 +322,8 @@ fisherDiscERs <- filterBycombStringency(
   ERs = total.ERs, .hitList = keepList,
   cmbstrgThreshold = 1.0E-08, isFisherPass = FALSE)
 
-## get all discarded ERs set that result of two different permissice threshold test
+## get all discarded ERs set that result of two different 
+## permissice threshold test
 DiscardedERs <- mergeDiscERs(initDiscERs, fisherDiscERs)
 print(DiscardedERs)
 ```

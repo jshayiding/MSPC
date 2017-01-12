@@ -44,6 +44,7 @@
 #' @importFrom S4Vectors DataFrame
 #' @importFrom IRanges as.matrix
 #' @importFrom methods as
+#' @importFrom methods hasArg
 #' @author Julaiti Shayiding
 #'
 #' @examples
@@ -67,12 +68,17 @@
 
 peakOverlapping <- function(peakset, FUN=which.max) {
     # input param checking
-    if (missing(peakset)) {
-        stop("Missing required argument peakset,
-             please choose the set of pre-processed peaks!")
+    if (!hasArg(peakset)) {
+        stop("required argument peakset is missing,
+             please choose the set of ERs without noise!")
     }
-    if (missing(FUN)) {
-        stop("Missing required argument FUN, please specify the
+
+    # FUN argument is used to select only one peak
+    #(either most stringent or least stringent) ERs
+    # if multiple overlapping peak interval were detected
+
+    if (!hasArg(FUN)) {
+        stop("required argument FUN is missing, please specify the
              peak type to be selected from multiple overlapping ERs!")
     }
     stopifnot(inherits(peakset[[1]], "GRanges"))

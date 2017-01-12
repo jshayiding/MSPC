@@ -21,6 +21,7 @@
 #' @export
 #' @importFrom rtracklayer as.data.frame
 #' @importFrom IRanges as.matrix
+#' @importFrom methods hasArg
 #'
 #' @author Julaiti Shayiding
 #'
@@ -49,18 +50,20 @@
 
 Fisher_stats <- function(hitList, peakset) {
     # input param checking
-    if (missing(peakset)) {
-        stop("Missing required argument peakset, please
-             choose the set of pre-processed peaks!")
+    if (!hasArg(peakset)) {
+        stop("required argument peakset is missing, please
+             choose the set of ER without noise!")
     }
-    if (missing(hitList)) {
-        stop("Missing required argument hitList, please choose overlap
-             hit list that comply minimum overlapping peak requirement!")
+    if (!hasArg(hitList)) {
+        stop("please choose the set of list of overlap hit index for ERs
+             that comply minimum overlapping peak requirement!")
     }
-    message("retrieve pvalue of peaks")
+    message("retrieve pvalue of ERs")
     pval_List <- mapply(get.pvalue, hitList, peakset)
     .helper.PV <- function(p.list) {
         res <- sapply(p.list, function(x) {
+            # To keep the correct geomtry of retrieved pvlue list,
+            # non-overlapped ERs' pvalue can be assigned value as 0
             out <- ifelse(length(x)>0,
                           x, 0.000000e+00)
         })

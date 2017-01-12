@@ -31,6 +31,7 @@
 #' @importFrom dplyr desc
 #' @importFrom methods as
 #' @importFrom rtracklayer export.bed
+#' @importFrom methods hasArg
 #' @author Julaiti Shayiding
 #'
 #' @examples
@@ -72,10 +73,14 @@
 #'
 
 export_ERs <- function(peakList_A, peakList_B, tau.s=1.0E-08) {
-    # input param checking
-    if(missing(peakList_A) | missing(peakList_B)) {
+    # sanity check for input param
+    if(!hasArg(peakList_A)) {
         stop("required arguments is missing,
-             please choose set of confirmed, discarded ERs")
+             please choose set of all confirmed ERs")
+    }
+    if(!hasArg(peakList_B)) {
+        stop("required arguments is missing,
+             please choose set of all discarded ERs")
     }
     peakList_A <- lapply(peakList_A, as.data.frame)
     peakList_B <- lapply(peakList_B, as.data.frame)

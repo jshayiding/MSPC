@@ -18,6 +18,7 @@
 #' @importFrom rtracklayer import.bed
 #' @importFrom rtracklayer score
 #' @importFrom methods as
+#' @importFrom methods hasArg
 #' @importFrom stats setNames
 #' @author  Julaiti Shayiding
 #'
@@ -30,11 +31,11 @@
 
 readPeakFiles <- function(peakFolder, pvalueBase=1L, verbose=FALSE) {
     # input param checking
-    if (missing(peakFolder)) {
-        stop("Missing required argument peakFolder, please
+    if (!hasArg(peakFolder)) {
+        stop("required argument peakFolder is missing, please
              choose input Chip-seq replicates in BED file!")
     }
-    if(missing(pvalueBase)) {
+    if(!hasArg(pvalueBase)) {
         stop("please specify pvalue convention")
     }
     stopifnot(length(peakFolder)>0)

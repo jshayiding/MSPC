@@ -53,6 +53,7 @@
 #' @importFrom S4Vectors lengths
 #' @importFrom XVector extractList
 #' @importFrom BiocGenerics Map
+#' @importFrom methods hasArg
 #' @author Julaiti Shayiding
 #'
 #' @examples
@@ -89,14 +90,16 @@ filterByOverlapHit <- function(.ovHit, peakset,
     stopifnot(length(peakset)>0)
     stopifnot(inherits(peakset[[1]], "GRanges"))
     replicate.type = match.arg(replicate.type)
-    if (missing(peakset)) {
+    if (!hasArg(peakset)) {
         stop("Missing required argument peakset, please
             choose the set of ERs without noise!")
     }
-    if (missing(.ovHit)) {
-        stop("Missing required argument .ovHit, please
-            choose overlapHit index that comply
-            minimum overlapping peak requirement!")
+    if (!hasArg(.ovHit)) {
+        stop("please choose the set of list of overlap hit index for ERs
+             that comply minimum overlapping peak requirement!")
+    }
+    if(!hasArg(replicate.type)) {
+        stop("replicate type must be specified")
     }
     min.c <- ifelse(replicate.type=="Biological",
                     length(peakset)-1,

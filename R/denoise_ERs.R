@@ -31,6 +31,7 @@
 #' @export
 #' @importFrom rtracklayer export.bed
 #' @importFrom stats setNames
+#' @importFrom methods hasArg
 #' @author Julaiti Shayiding
 #'
 #' @examples
@@ -50,9 +51,12 @@
 denoise_ERs <- function(peakGRs=NULL,tau.w = 1.0E-04,fileName ="noise",
                         outDir = getwd(),verbose = FALSE) {
     # check input param
-    if (missing(peakGRs)) {
-        stop("Missing required argument peakGRs,
+    if (!hasArg(peakGRs)) {
+        stop("required argument peakGRs is missing,
              please choose imported Chip-seq replicates!")
+    }
+    if(!hasArg(tau.w)) {
+        stop("permissive threshold value must be specified")
     }
     stopifnot(inherits(peakGRs[[1L]], "GRanges"))
     stopifnot(length(peakGRs)>0)
