@@ -19,7 +19,7 @@
 #' ERs set that failed from minimum overlapping peak requirement also
 #' passed to \link{mergeDiscERs}
 #'
-#' @param .ovHit output of \link{peakOverlapping},
+#' @param ovHit output of \link{peakOverlapping},
 #' where all overlap-hit pair is in \link[IRanges]{IntegerList}
 #'
 #' @param peakset output of \link{denoise_ERs}. Set of Chip-seq
@@ -83,20 +83,16 @@
 #' lapply(keepList, head)
 #' lapply(initDisc.ERs, head)
 
-filterByOverlapHit <- function(.ovHit, peakset,
+filterByOverlapHit <- function(ovHit, peakset,
                                replicate.type=c("Biological", "Technical"),
                                isSuffOverlap= TRUE) {
-    # check input param
+    # sanity input param checking
     stopifnot(length(peakset)>0)
-    stopifnot(inherits(peakset[[1]], "GRanges"))
+    stopifnot(class(peakset)=="GRangesList")
     replicate.type = match.arg(replicate.type)
     if (!hasArg(peakset)) {
         stop("Missing required argument peakset, please
-            choose the set of ERs without noise!")
-    }
-    if (!hasArg(.ovHit)) {
-        stop("please choose the set of list of overlap hit index for ERs
-             that comply minimum overlapping peak requirement!")
+             choose the set of ERs without noise!")
     }
     if(!hasArg(replicate.type)) {
         stop("replicate type must be specified")
@@ -104,18 +100,11 @@ filterByOverlapHit <- function(.ovHit, peakset,
     min.c <- ifelse(replicate.type=="Biological",
                     length(peakset)-1,
                     length(peakset))
-    cnt.ovHit <- as.matrix(Reduce('+', lapply(.ovHit, lengths)))
-    if(isSuffOverlap==TRUE) {
-        keepHit <- lapply(.ovHit, function(ele_) {
-            keepMe <- sapply(cnt.ovHit, function(x) x >= min.c)
-            res <- ele_[keepMe]
-        })
-    } else if(isSuffOverlap==FALSE){
-        dropHit <- lapply(.ovHit, function(ele_) {
-            droped <- sapply(cnt.ovHit, function(x) x < min.c)
-            res <- ele_[droped]
-        })
-        rslt <- Map(unlist,
-                    mapply(extractList, peakset, dropHit))
-    }
+    # check cardinality for minimum overlapping peak requirement
+    K <- tabulate(ovHit$query) >= min.c
+    keepIdx <- K[ovHit$query]
+    if(!isSuffOverlap)
+        keepIdx <- !(keepIdx)
+    res <- ovHit[keepIdx,]
+    return(res)
 }

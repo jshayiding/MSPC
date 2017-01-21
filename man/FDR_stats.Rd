@@ -55,14 +55,14 @@ require(XVector)
 
 ## prepare list of confirmedERs, discardedERs
 confirmedERs <- GRangesList(
-    cat = GRanges(
-        seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
-        strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"),
-        score=c(14,9,17),p.value=c(1e-14,1e-09,1e-17)),
     bar = GRanges(
         seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
         strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"),
-        score=c(22,6,13),p.value=c(1e-22,1e-06,1e-13))
+        score=c(22,6,13),p.value=c(1e-22,1e-06,1e-13)),
+    cat = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
+        strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"),
+        score=c(14,9,17),p.value=c(1e-14,1e-09,1e-17))
 )
 
 discardedERs <- GRangesList(

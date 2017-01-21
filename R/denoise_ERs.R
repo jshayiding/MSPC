@@ -48,17 +48,15 @@
 #' ## Explore all stringent and weak enriched regions
 #' total.ERs
 
-denoise_ERs <- function(peakGRs=NULL,tau.w = 1.0E-04,fileName ="noise",
-                        outDir = getwd(),verbose = FALSE) {
+denoise_ERs <- function(peakGRs,tau.w = 1.0E-04,noiLab ="noise",
+                        outDir = tempdir(),verbose = FALSE) {
     # check input param
-    if (!hasArg(peakGRs)) {
-        stop("required argument peakGRs is missing,
-             please choose imported Chip-seq replicates!")
+    if (class(peakGRs) != "GRangesList") {
+        stop("input must be a GRangesList Object")
     }
     if(!hasArg(tau.w)) {
         stop("permissive threshold value must be specified")
     }
-    stopifnot(inherits(peakGRs[[1L]], "GRanges"))
     stopifnot(length(peakGRs)>0)
     stopifnot(is.numeric(tau.w))
     if (verbose) {
@@ -70,14 +68,15 @@ denoise_ERs <- function(peakGRs=NULL,tau.w = 1.0E-04,fileName ="noise",
         dir.create(file.path(outDir))
         setwd(file.path(outDir))
     }
-    res <- lapply(seq_along(peakGRs), function(x) {
-        gr <- peakGRs[[x]]
-        grNM <- names(peakGRs)[x]
-        drop <- gr[gr$p.value > tau.w]
-        export.bed(drop, sprintf("%s/%s.%s.bed", outDir, grNM, fileName))
-        keep <- gr[gr$p.value <= tau.w]
-        return(keep)
-    })
-    rslt <- setNames(res, names(peakGRs))
-    return(rslt)
+    gr <- unlist(peakGRs, use.names = FALSE)
+    idx <- factor(rep(names(peakGRs), lengths(peakGRs)),
+                  levels = names(peakGRs))
+    Drop <- gr$p.value > tau.w
+    noise <- split(gr[Drop], idx[Drop])
+    for(i in seq_along(noise)) {
+        filename <- paste(names(noise)[i], ".bed", sep = "")
+        export.bed(noise[[i]], sprintf("%s/%s.%s", outDir, noiLab,filename))
+    }
+    res <- split(gr[!Drop], idx[!Drop])
+    return(res)
 }

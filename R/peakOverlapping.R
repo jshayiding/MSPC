@@ -66,39 +66,32 @@
 #' ## explore overlap-hit index table
 #' print(hit)
 
-peakOverlapping <- function(peakset, FUN=which.max) {
-    # input param checking
-    if (!hasArg(peakset)) {
-        stop("required argument peakset is missing,
-             please choose the set of ERs without noise!")
-    }
+#' @note Thanks to Martin Morgan's revision on this implementation
 
-    # FUN argument is used to select only one peak
-    #(either most stringent or least stringent) ERs
-    # if multiple overlapping peak interval were detected
-
-    if (!hasArg(FUN)) {
-        stop("required argument FUN is missing, please specify the
-             peak type to be selected from multiple overlapping ERs!")
+peakOverlapping <- function(peakset, whichType=c("max","min")) {
+    # sanity input param checking
+    if (class(peakset) != "GRangesList") {
+        stop("input must be a GRangesList Object")
     }
-    stopifnot(inherits(peakset[[1]], "GRanges"))
-    stopifnot(length(peakset)>1)
-    res <- list()
-    for(i in seq_along(peakset)) {
-        que <- peakset[[i]]
-        queHit <- as(findOverlaps(que), "List")
-        supHit <- lapply(peakset[- i], function(ele_) {
-            ans <- as(findOverlaps(que, ele_), "List")
-            out.idx0 <- as(FUN(extractList(ele_$score, ans)), "List")
-            out.idx0 <- out.idx0[!is.na(out.idx0),]
-            ans <- ans[out.idx0]
-        })
-        res[[i]] = DataFrame(c(list(que=queHit), sup=supHit))
-        names(res[[i]]) = c(names(peakset[i]),names(peakset[- i]))
-    }
-    rslt <- lapply(res, function(x) as.matrix(x[names(res[[1]])]))
-    rslt <- DataFrame(rbind(rslt[[1]],
-                            unique(do.call("rbind", rslt[2: length(rslt)]))))
-    rslt <- lapply(rslt, function(x) as(x, "CompressedIntegerList"))
-    return(rslt)
+    whichType = match.arg(whichType)
+    stopifnot(length(peakset)>0)
+    # flatten out input peak list
+    #allPeaks <- unlist(GRangesList(peakset))
+    allPeaks <- unlist(peakset, use.names = TRUE)
+    message("find peak overlapping across multiple sample simultanously")
+    hitIdx <- findOverlaps(allPeaks)
+    new_mcols <- DataFrame(
+        query = queryHits(hitIdx),
+        subject = subjectHits(hitIdx),
+        score = allPeaks$score[subjectHits(hitIdx)],
+        p.value = allPeaks$p.value[subjectHits(hitIdx)]
+    )
+    new_mcols <- new_mcols[order(new_mcols$score),]
+    len_vect <- rep(seq_along(peakset), lengths(peakset))
+    bindHit <- cbind(new_mcols$query, len_vect[new_mcols$subject])
+    if(whichType == "max")
+        maxHit <- !duplicated(bindHit, fromLast=TRUE)
+    maxHit <- !duplicated(bindHit, fromLast=FALSE)
+    res <- new_mcols[maxHit,]
+    return(res)
 }

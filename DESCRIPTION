@@ -1,6 +1,6 @@
 Package: MSPC
 Type: Package
-Title: Using combined evidence from replicates to evaluate ChIP-seq peaks
+Title: Multiple Sample Peak Calling: Using combined evidence from replicates to evaluate ChIP-seq peaks
 Version: 0.99.4
 Author: Julaiti Shayiding
 Depends:
@@ -25,7 +25,6 @@ Suggests:
     knitr,
     rmarkdown,
     testthat,
-    tidyverse,
     BiocStyle
 Maintainer: julaiti shayiding <juratbupt@gmail.com>
 Description: This packages implements set of functions to retrieve overlapped

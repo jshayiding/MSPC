@@ -50,6 +50,8 @@ readPeakFiles <- function(peakFolder, pvalueBase=1L, verbose=FALSE) {
         } else {
             .gr
         }
-        return(.gr)
+        .gr
     })
+    res <- GRangesList(f.read)
+    return(res)
 }
