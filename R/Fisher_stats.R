@@ -8,19 +8,14 @@
 #'
 #' Passed to \link{filterBycombStringency}
 #'
-#' @param hitList output of \link{filterByOverlapHit} take \code{isSuffOverlap}
+#' @param ovHit output of \link{filterByOverlapHit} take \code{isSuffOverlap}
 #' as \code{TRUE}. Only Enriched regions that comply with
-#' minimum overlapping peak requirement can be further evaluated. We kept ERs
-#' that fulfill minimum overlapping requirement in \link[IRanges]{IntegerList}.
+#' minimum overlapping peak requirement can be further evaluated.
+#' We used \link[S4Vectors]{DataFrame} to hold all metadata that we need to
+#' evaluate for successive downstream analysis.
 #'
-#' @param peakset output of \link{denoise_ERs}. Set of Chip-seq replicate
-#' imported and all peaks are stored in GRanges object, where all
-#' background noise won't be further processed.
-#'
-#' @return numeric vector, Global Fisher's score are in vector
+#' @return DataFrame with combined pvalue
 #' @export
-#' @importFrom rtracklayer as.data.frame
-#' @importFrom IRanges as.matrix
 #' @importFrom methods hasArg
 #'
 #' @author Julaiti Shayiding
@@ -45,35 +40,19 @@
 #'                                isSuffOverlap=TRUE)
 #'
 #' ## Global Fisher' score
-#' comb.p <- Fisher_stats(hitList = keepList , peakset = total.ERs)
+#' comb.p <- Fisher_stats(ovHit = keepList)
 #'
 
-Fisher_stats <- function(hitList, peakset) {
-    # input param checking
-    if (!hasArg(peakset)) {
-        stop("required argument peakset is missing, please
-             choose the set of ER without noise!")
+Fisher_stats <- function(ovHit) {
+    # sanity input param checking
+    if(!c("subject", "query", "p.value") %in% colnames(ovHit)) {
+        stop("required columns are missing")
     }
-    if (!hasArg(hitList)) {
-        stop("please choose the set of list of overlap hit index for ERs
-             that comply minimum overlapping peak requirement!")
-    }
-    message("retrieve pvalue of ERs")
-    pval_List <- mapply(get.pvalue, hitList, peakset)
-    .helper.PV <- function(p.list) {
-        res <- sapply(p.list, function(x) {
-            # To keep the correct geomtry of retrieved pvlue list,
-            # non-overlapped ERs' pvalue can be assigned value as 0
-            out <- ifelse(length(x)>0,
-                          x, 0.000000e+00)
-        })
-    }
-    pval.TB <- as.data.frame(mapply(.helper.PV, pval_List))
-    comb.pval <- suppressWarnings(
-        .globSC <- apply(pval.TB[, 1:length(pval.TB)],1, function(ro) {
-            fisherCmbp(ro)
-        })
-    )
-    comb.pval <- as.matrix(comb.pval)
-    return(comb.pval)
+    DF <- DataFrame(split(ovHit, ovHit$query))
+    pvList <- as.matrix(DF$p.value)
+    pvList[is.na(pvList)] <- 0
+    message("getting combined pvalue")
+    cmbp <- apply(pvList,1,fisherCmbp)
+    DF$comb.pv <- cmbp
+    return(DF)
 }
