@@ -19,7 +19,7 @@
 #' all enrichred regions' pvalue above this thrshold,
 #' are considered background signal (a.k.a, noise)
 #'
-#' @param fileName user has option to name background signal
+#' @param noiLab user has option to name background signal
 #' by their own preference. by default name it as "noise"
 #'
 #' @param outDir only noise can be exported as standard BED file;
@@ -30,9 +30,9 @@
 #' @return list of enriched regions stored in \link[GenomicRanges]{GRanges}
 #' @export
 #' @importFrom rtracklayer export.bed
-#' @importFrom stats setNames
+#' @importFrom S4Vectors lengths
 #' @importFrom methods hasArg
-#' @author Julaiti Shayiding
+#' @author Jurat Shahidin
 #'
 #' @examples
 #' require(rtracklayer)
@@ -48,22 +48,16 @@
 #' ## Explore all stringent and weak enriched regions
 #' total.ERs
 
-denoise_ERs <- function(peakGRs,tau.w = 1.0E-04,noiLab ="noise",
-                        outDir = tempdir(),verbose = FALSE) {
+denoise_ERs <- function(peakGRs,
+                        tau.w = 1.0E-04,
+                        noiLab ="noise",
+                        outDir = tempdir()) {
     # check input param
     if (class(peakGRs) != "GRangesList") {
         stop("input must be a GRangesList Object")
     }
-    if(!hasArg(tau.w)) {
-        stop("permissive threshold value must be specified")
-    }
     stopifnot(length(peakGRs)>0)
     stopifnot(is.numeric(tau.w))
-    if (verbose) {
-        cat(">> filter out all background noise peaks whose pvalue
-            above threshold \t\t", format(Sys.time(),
-                                          "%Y-%m-%d %X"), "\n")
-    }
     if(!dir.exists(outDir)) {
         dir.create(file.path(outDir))
         setwd(file.path(outDir))

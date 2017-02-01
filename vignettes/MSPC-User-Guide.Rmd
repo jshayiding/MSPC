@@ -1,6 +1,6 @@
 ---
 title: "MSPC-User-Guide"
-author: "Julaiti Shayiding"
+author: "Jurat Shahidin"
 date: '`r Sys.Date()`'
 output:
   BiocStyle::html_document:
@@ -25,16 +25,16 @@ knitr::opts_chunk$set(tidy         = FALSE,
 
 ```
 
-```{r vignetteSetup, echo=FALSE, message=FALSE, warning = FALSE}
+```{r vignetteSetup, message=FALSE, warning = FALSE}
 library(MSPC)
 library(rtracklayer)
 library(GenomicRanges)
-library(S4Vectors)
-library(XVector)
-library(tidyr)
-library(tidyverse)
-library(dplyr)
-library(magrittr)
+#library(S4Vectors)
+#library(XVector)
+#library(tidyr)
+#library(tidyverse)
+#library(dplyr)
+#library(magrittr)
 library(data.table)
 ```
 
@@ -42,25 +42,25 @@ library(data.table)
 
 The primary emphasis of **MSPC** package is to rescue weakly enriched regions 
 in single sample by co-localized overlapping evidence in multiple Chip-seq
-replicates. Simultaneous presence of an enriched regions in replicates
+replicates. The simultaneous presence of an enriched regions in replicates
 experiment would justify a local decrease of the stringency criterion,
 leveraging on the principal that repeated evidence is compensating for weak
-evidence. We assess the presense of overlapping enriched regions across multiple
+evidence. We assess the presence of overlapping enriched regions across multiple
 replicates. The significance of overlapping regions is rigorously combined with
-Fisher method to obtain global score. Using Fisher method to combine ER evidence
+Fisher method to obtain a global score. Using Fisher method to combine ER evidence
 across replicates in order to increase the statistical significance of the ERs
 detected in the Chip-seq experiment; it assigns ERs to different sets, and in
 addition provides analysis features that allow performing further assessments
 and functional analyses on the identified ERs. However, we applied our method to
 Myc transcription factor Chip-seq datasets in k562 cells available in Encode
-consoritum. Using replicates, we could extend up to 3 times the ER number with
-respect to single sample analysis with equivalent siginificance permissive
+consortium. Using replicates, we could extend up to 3 times the ER number with
+respect to single sample analysis with an equivalent significance permissive
 threshold. 
 **MSPC** provides functions to facilitate the output for downstream analysis on
-Chip-seq replicates and generate multiple output set. **MSPC** facilitates
+Chip-seq replicates and generates multiple output set. **MSPC** also facilitates
 jointly analyzes the enriched regions of multiple replicates, distinguishing
-between biological and technical replicates, and accepting user defined
-parameters, and provides graphic view of output. 
+between biological and technical replicates, and accepting user-defined
+parameters, and provides the graphic view of output.
 
 # Citation
 
@@ -72,37 +72,37 @@ Bioinformatics 2015, 31(17):2761-2769.doi:[10.1093/bioinformatics/btv293]
 
 # Introduction
 
-Chromatin Immunoprecipitation followed by sequencing (Chip-seq) detects genome
-wide DNA protein interations and chromatin modifications, returning enriched
+Chromatin Immunoprecipitation followed by sequencing (Chip-seq) detects genome-wide 
+DNA-protein interactions and chromatin modifications, returning enriched
 regions associated with significance score. Rigorously combine the evidence of
 ERs in Chip-seq replicates, with the options to set a permissive significance
-threshold on the the repeated evidence and minimum number of replicates bearing
+threshold on the repeated evidence and a minimum number of replicates bearing
 this evidence. Moderately significant interaction can correspond to true, weak
 interactions, or to false positives, replicates of Chip-seq experiments can
 provide co-localised evidence to rescue weakly enriched regions in single sample
-analysis by helping co-localized overlapping evidence of supporting with mutiple
-sample respectively. MSPC Packages provides set of functions to implement
-several workflow to accomplish downstream analysis efficiently. Here we
+analysis by helping co-localized overlapping evidence of supporting with multiple
+samples respectively. MSPC Packages provides set of functions to implement
+several workflows to accomplish downstream analysis efficiently. Here we have
 developed **MSPC** package, R/Bioconductor Package for Multiple Sample Peak
-Calling based on original mathod that presented on [@ Using combined evidence
+Calling based on original method that presented on [@ Using combined evidence
 from replicates to evaluate ChIP-seq peaks.], to rescue weakly enriched regions
 in single simple by helping with co-localized overlapping evidence in multiple
-sample. Input Chip-seq replicates imported and all enriched regions are stored
-in `GRanges` object. We assess the presence of overlapping peaks across mutiple
-Chip-seq replicates simulatanously, we introduced combined stringency test for
-all enriched regions comply minimum overlapping peak requirement. Through Fisher
+samples. Input Chip-seq replicates imported and all enriched regions are stored
+in `GRanges` object. We assess the presence of overlapping peaks across multiple
+Chip-seq replicates simultaneously, we introduced combined stringency test for
+all enriched regions complies minimum overlapping peak requirement. Through Fisher
 method, Obtained combined p-value of enriched regions will against combined
 stringency threshold, which yield set of rescued enriched regions through
 Fisher' combined test, and set of discarded ERs that failing for combined
-stringency test. Given output of `filterBycombStringency`, we could identify 
-stringent/weak enriched regiosn by using stringent permissive threshold, 
+stringency test. Given the output of `filterBycombStringency`, we could identify 
+stringent/weak enriched regions by using stringent permissive threshold,  the 
 output can be exported as standard BED file.Finally, we need to do 
 intermediate set purification before applying BH correction test to 
 control false discovery rate, for example, if user choose `Technical` 
 replicates in their input, then enriched regions passed in one test but 
-failed next successive test, these peaks won't be involbed in output. 
+failed next successive test, these peaks won't be involved in output. 
 To help user deeper insight about analysis result, `getPlot` function 
-also provides graphical view of output.
+also provides a graphical view of output.
 
 # Downstream analysis workflow for Chip-seq experiments
 
@@ -113,7 +113,7 @@ Present MSPC Pakcage pipeline
 This workflow show how to read Genomic data set to `GRanges` objects. The first,
 efficiently reading input Chip-seq or DNAse-seq data set (A.k.A, Chip-seq
 replicates) in R. Here is Bioconductor package `rtracklayer` provides rich
-interfaces to read various type of Genomic data set. `getPeakFile` can print out
+interfaces to read the various type of Genomic data set. `getPeakFile` can print out
 name of example peak files, **MSPC** provides `readPeakFile` function that can
 read input Chip-seq replicates and all enriched regions, are stored in `GRanges`
 object, where several peak files (A.K.A, Chip-seq replicates) can be read
@@ -139,29 +139,29 @@ inputDat
 
 ### Data conversion
 
-Some data sources provides Chip-seq enriched regions (A.K.A, peaks) without
+Some data sources provide Chip-seq enriched regions (A.K.A, peaks) without
 p-value under specific conditions. Based on UCSC's BED format file
-specification, peak's siginificance can be represented as score. **MSPC**
-provides function to make data conversion of peak'
+specification, peak's significance can be represented as a score. **MSPC**
+provides a function to make data conversion of peak'
 score as p-value, where pvalue can be represented -1*log10(score),
--10*log10(score), -100*log10(score), so user has option to choose cutom pvalue
+-10*log10(score), -100*log10(score), so the user has the option to choose a cutom pvalue
 format for input peak files. The reason adding p.value as new metadata column in
 each enriched region (a.k.a, peak), we're going to evaluate each ERs by its
-p.value with different level permissive threshold. The dataset in this vignette
-were downloaded from Encode consortium, due to original dataset is rather big,
+p.value with the different level permissive threshold. The dataset in this vignette
+was downloaded from Encode consortium, due to an original dataset is rather big,
 therefore, I took sample peaks from each bed file for the sake of facilitating
 vignette compilation. 
 
 ## Clean up all background signal from input Chip-seq samples
 
-Initial workflow, we set up permissive threshold for signal' significant value
+Initial workflow, we set up a permissive threshold for signal' significant value
 of each enriched region, where extremely weakly enriched regions won't be
 processed. Using permissive threshold for weakly enriched regions, where all
-enriched reions' p.value above this threshold, are considered noise, therefore
+enriched regions' p.value above this threshold, are considered noise, therefore
 these Extremely weakly enriched regions won't be processed and excluded from
 input Chip-seq replicates. **MSPC** provides function `denoise_ERs` method to
 clean up all background signal from original Chip-seq replicates, exported as
-standard BED file for the sake of evaluate each Chip-seq replicate that bearing
+standard BED file for the sake of evaluating each Chip-seq replicate that bearing
 different output set with clear biological evidence. For further detailed
 information, please read help pages ?`denoise_ERs`.
 
@@ -181,29 +181,30 @@ print(total.ERs)
 
 We designed a general methodological framework to rigorously combine the
 evidence of enriched regions in Chip-seq replicates, with the option to set
-significance threshold on the repeated evidence and minimum number of samples
+significance threshold on the repeated evidence and a minimum number of samples
 bearing this evidence. In our method, we are going to assess each enriched
 region in current replicates (A.K.A, chosen replicates) with the support of rest
 of Chip-seq replicates in input dataset for identifying overlapping ERs. Due to
 processing each peak interval(all peak intervals are stored in `GRanges`
 objects) by element-wise to find overlap is quite inefficient. **MSPC** provides
-`peakOverlapping` function which efficiently vectorize retrieving overlapped
-regions from multiple Chip-seq replicates as `List` object where all overlap-hit
-is returned. However, it may happen that an enriched region(A.K.A, peak or ER)
-from current Chip-seq replicate overlap multiple ERs from other supported
-replicates. `peakOverlapping` retrieve only one overlapping peak from each
-supported Chip-seq replicate if multiple overlapping were detected.
-`peakOverlapping` function accept two parameter, first argument `peakset` is set
-of enrichred regions in GRanges objects, which treated as `GRangesList` object,
-second one `FUN` is used to choose most stringent(with lowest p-value) or least
-stringent(with highest p-value) overlapped peak if multiple peaks overlapping
-were detected. User has option whether keeping most stringent or least stringent
+`peakOverlapping` function which efficiently vectorizes retrieving overlapped
+regions from multiple Chip-seq replicates simulatanously, all Hits and metadata 
+are stored in an efficient data structure `DataFrame`which is greatly facilitate 
+further downstrean analysis. However, it may happen that an enriched 
+region(A.K.A, peak or ER) from current Chip-seq replicate overlap multiple ERs 
+from other supportedreplicates. `peakOverlapping` retrieve only one overlapping peak 
+from eachsupported Chip-seq replicate if multiple overlapping were detected.
+`peakOverlapping` function accept two parameters, first argument `peakset` is set
+of enriched regions in GRanges objects, which treated as `GRangesList` object,
+second one `FUN` is used to choose most stringent(with the lowest p-value) or least
+stringent(with the highest p-value) overlapped peak if multiple peaks overlapping
+were detected. The user has an option whether keeping most stringent or least stringent
 peak from multiple overlapped ERs. `FUN` could call `which.max` or `which.min`.
-Note that identifying set of overlappinng peaks across multiple Chip-seq
-replicates can give rise to ambiguities, espectially number of selected 
-input bed files n>2, so global approach can depends on the 
+Note that identifying set of overlapping peaks across multiple Chip-seq
+replicates can give rise to ambiguities, especially number of selected 
+input bed files n>2, so global approach can depend on the 
 order of the input Chip-seq replicates, permuting sample is needed when 
-identifying overlapping peak. For the further detailed information, 
+identifying the overlapping peak. For the further detailed information, 
 please review help page ?`peakOverlapping` function.
 
 ```{r 'peakOverlapping'}
@@ -217,20 +218,19 @@ print(Hit)
 ## Check minimum overlapping peak requirement
 
 We assess the presence of overlapping peak across multiple Chip-seq replicates
-simultanously. `peakOverlapping` function provides overlap hit list with correct
+simultaneously. `peakOverlapping` function provides overlap hit list with a correct
 geometry of overlapping ERs. We need to evaluate whether each ERs comply minimum
-overlapping peak requirement or not. To do so, we are getting cardinality of
+overlapping peak requirement or not. To do so, we are getting the cardinality of
 overlapping ERs in parallel, `S4Vectors` provides some very useful function for
-vectorization. Cardinality of overlapped ERs must be compared with parameter
-`min.c`, is number of minimum overlapping peaks. Note that `min.c` can be
-determined by type of input Chip-seq replicates, and number of samples are
+vectorization. The cardinality of overlapped ERs must be compared with parameter
+`min.c`, is a number of minimum overlapping peaks. Note that `min.c` can be
+determined by a type of input Chip-seq replicates, and a number of samples are
 chosen. Through cardinality of overlapping ERs against `min.c`, we could
 identify whether all enriched regions comply minimum overlapping peak
-requirement or not. `filterByOverlapHit` accept four parameter that must be used
-: parameter `.ovHit` is the output of `peakOverlapping`, to be used for getting
+requirement or not. `filterByOverlapHit` accept four parameter that must be used: parameter `.ovHit` is the output of `peakOverlapping`, to be used for getting
 cardinality of overlapped ERs; parameter `peakset` is output of `denoise_ERs`,
-set of all enriched regions except noise; thourhg parameter `replicate.type`, we
-can determine number of minimum overlapping peak requirement; parameter
+set of all enriched regions except noise; through parameter `replicate.type`, we
+can determine the number of minimum overlapping peak requirement; parameter
 `isSuffOverlap` take `TRUE`, `filterByOverlapHit` return list of all enriched
 regions comply minimum overlapping peak requirement, we kept these ERs in
 `IntegerList` object. parameter `isSuffOverlap` take `FALSE`,
@@ -265,15 +265,11 @@ print(initDiscERs)
 ## Fisher's method for ERs that comply minimum overlapping peak requirement
 
 **MSPC** provides `Fisher_stats` helper function to retrieve the pvalue of all
-enriched regions that comply with minimum overlapping peak requirement, with
-correct gemotry of overlap hit list, then using `fisherCmbp` function to get 
-global Fisher score. Note that obtained global fisher score is
-correctly match the original gemotry of overlap-hit list by parallel.
-`Fisher_stats` accept two paramter : paramter `hitList` is the output of
+enriched regions that comply with minimum overlapping peak requirement, with the correct geometry of overlap hit list, then using `fisherCmbp` function to get global Fisher score. Note that obtained global fisher score correctly matches the original geometry of overlap-hit list by parallel.
+`Fisher_stats` accept two parameters: parameter `hitList` is the output of
 `filterByOverlapHit`, list of ERs that comply minimum overlapping peak
-requiremmnt; parameter `peakset`, the output of `denoise_ERs`. For the further
-detailed information, please review help page ?`Fisher_stats` . 
-
+requirement; parameter `peakset`, the output of `denoise_ERs`. For the further
+detailed information, please review help page ?`Fisher_stats'. 
 
 ```{r 'Fisher_stats'}
 ## Global Fisher score
@@ -286,9 +282,9 @@ head(comb.p)
 
 ## Combined Stringency Test
 
-Main idea behind our method is to rescue weakly enriched regions in single
+The main idea behind our method is to rescue weakly enriched regions in single
 sample by helping with co-localized overlapping evidence in multiple chip-seq
-replicates. We assess the presence of overlapping peak across multiple sample.
+replicates. We assess the presence of overlapping peak across multiple samples.
 Therefore, the significance of overlapping peaks is rigorously combined with
 Fisher method to obtain global fisher score. The output of `filterByOverlapHit`,
 all enriched regions that comply with minimum overlapping peak requirement can
@@ -297,13 +293,12 @@ be further evaluated, for the sake of conveniency, we kept these ERs in
 combine stringency test on all enriched regions that comply minimum overlapping
 peak requirement. Using obtained combined p.value `comb.p` against combined
 stringency threshold `cmbstrgThreshold`, to identify whether ERs are rescued by
-Fisher's combined test or discarded. However. As we mentioned in introduction
-sestion, main emephasis of this packages to rescue weakly enriched regions in
-single sample by helping with co-localized overlpping evidence in multiple
-sample. Due to repeated evidence across multiple replicates can compensate for
-lower sigificance in single sample, an enriched regions might be multiple times
+Fisher's combined test or discarded. However. As we mentioned in the introduction
+section, the main emphasis of this packages to rescue weakly enriched regions in a single sample by helping with co-localized overlapping evidence in multiple
+samples. Due to repeated evidence across multiple replicates can compensate for
+lower significance in a single sample, an enriched regions might be multiple times
 confirmed or discarded according to different parameter usages. For the further
-detailed information, please review help page ?`filterBycombStringency` method .
+detailed information, please review help page ?`filterBycombStringency` method.
 
 ```{r 'confirmedERs'}
 ## rescued ERs by Fisher's combined test
@@ -331,29 +326,21 @@ print(DiscardedERs)
 
 ## Identify and Export stringent/ weak ERs 
 
-Chip-seq detects genome-wide DNA protein interation, 
-returing enriched regions which associated with significance score. 
+Chip-seq detects genome-wide DNA-protein interaction, 
+returning enriched regions which associated with significance score. 
 Using permissive threshold tau.s for signal's significant value of 
-stringent enriched region, we could identify set of stringent, 
+the stringent enriched region, we could identify set of stringent, 
 weak ERs by the output of \link{filterBycombStringency} function.
-Due to repeated evidence across multiple replicates can compensate for 
-lower sigificance in single sample, an enriched regions might be 
-multiple times confirmed or discarded according to different parameter usages. 
-This is one of key characteristic of our method that assign an enriched regions 
-in different set, in addition which provides analysis features that allow 
-performing further assessments and functional analyses on the identified ERs.
+Due to repeated evidence across multiple replicates can compensate for lower significance in a single sample, an enriched regions might be multiple times confirmed or discarded according to different parameter usages. 
+This is one of the key characteristics of our method that assigns an enriched regions in the different set, in addition, which provides analysis features that allow performing further assessments and functional analyses on the identified ERs.
 **MSPC** provides `export_ERs` function to identify stringent/weak enriched 
 regions by permissive threshold \code{tau.s}. `export_ERs` function 
-acceept following parameter : parameter `peakList_A` is set of all 
-confirmed enriched regions that fullfill Fisher's combined test; 
-`peakList_B` is set of all discarded enriched regions that failing for 
-combined stringency test; parameter `tau.s` is permissive threshold 
-for stringent ERs, all enriched regions' p.value below this threhold, 
+accept following parameter: parameter `peakList_A` is set of all 
+confirmed enriched regions that fulfill Fisher's combined test; 
+`peakList_B` is set of all discarded enriched regions that failing for combined stringency test; parameter `tau.s` is a permissive threshold for stringent ERs, all enriched regions' p.value below this threshold, 
 are considered stringent enriched regions, while above this threshold
-are weakly enriched regions. **MSPC** will produce mulitple output for 
-each Chip-seq replicates. For the sake of easy understand result, 
-export output set as Standard BED format file can be done. All exported 
-output BED file will be placed in vignette folder.  
+is weakly enriched regions. **MSPC** will produce multiple outputs for each Chip-seq replicates. For the sake of easily understand the result, 
+exporting output set as Standard BED format file can be done. All exported output BED file will be placed in vignette folder.  
 
 ```{r 'export_ERs'}
 ## Identify & Export Stringent/Weak ERs
@@ -367,8 +354,8 @@ print(outputSet)
 
 ### Visualize identified stringent/weak ERs
 
-**MSPC** provides `getPlot` For the sake of easy understand the 
-output set, return stack bar plot for each Chip-seq replicates . 
+**MSPC** provides `getPlot` For the sake of easy understand the output set, 
+return stack bar plot for each Chip-seq replicates. 
 For the further detailed information, please review 
 help pages ?`getPlot` function. 
 
@@ -384,10 +371,10 @@ getPlot(peakList_A = confirmed, peakList_B = discarded, tau.s = 1.0E-08)
 
 ## Multiple Testing Correction
 
-Multiple testing correction is performed on ERs that passing intermediate set
-purification, through set purification on all confirmed, discarded ERs set, we
+Multiple testing corrections is performed on ERs that passing intermediate set
+purification, through set purification on all, confirmed, discarded ERs set, we
 can obtain new confirmed ERs. However, we need to correct the p.value of ERs
-using the Benjamini-Hochberg multiple testing correction with user-specified
+using the Benjamini-Hochberg multiple testing corrections with user-specified
 false discovery rate, which yields multiple-testing confirmed or discarded ERs.
 For the further detailed information, please review help page ?`FDR_stats`
 method.
@@ -397,10 +384,9 @@ method.
 We distinguish between technical and biological replicates of Chip-seq 
 experiments. If user choose input replicate's type as `Technical`, 
 An enriched regions passed in one test (Passed with minimum overlapping 
-peak requirement test) but failed in anohter 
-( failed with Fisher's combined test), then this ERs won't be included 
-in output. For this reason, we decided to perform set purification to 
-check whether ERs are both existed in confirmed or discarded ERs set. 
+peak requirement test) but failed in another ( failed with Fisher's combined test), 
+then this ERs won't be included in the output. For this reason, we decided to perform 
+set purification to check whether ERs are both existed in confirmed or discarded ERs set. 
 Using `anti_join` method from `dplyr` packages make this easy. 
 
 
