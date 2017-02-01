@@ -1,13 +1,34 @@
 # MSPC - an R/Bioconductor package for Multiple Sample Peak Calling
+#
+#' Assess overlapping enriched regions across multiple sample
 #'
-# @docType package
-# @references
-#' @param peakset
-#' @param whichType
-#' @param replicate.type
-#' @param cmbStrgThreshold
-#' @param isConfirmed
+#'
+#' @param peakset the output of \link{denoise_ERs}.
+#' set of Chip-seq replicate imported and all peaks are stored in
+#' GRanges object, where all background signal were excluded.
+#'
+#' @param whichType user has options to keep most stringent(with loest p-value)
+#' or least stringent(highest p-value) peak if multiple overlapping peaks
+#' were detected. By default, keep most stringent one.
+#'
+#' @param replicate.type A charcter vector used to select type of input
+#' Chip-seq replicate ( Biological / Technical replicate).
+#'
+#' @param cmbStrgThreshold combined stringency threshold
+#' against all enriched regions p-value, so we could identify
+#' whether ERs fulfill stringency test,
+#' and result can be set of confirmed/discarded peaks respectively.
+#'
+#' @param isConfirmed logical vector that check whether ERs
+#' comply combined stringency test.
+#'
 #' @return
+#' \code{isConfirmed} is \code{True}:
+#' return set of enriched regions passed from combined stringency test
+#'
+#' \code{isConfirmed} is \code{False} :
+#' return set of enriched regions that failed from Fisher method
+#'
 #' @export
 #' @importFrom GenomicRanges findOverlaps
 #' @importFrom S4Vectors DataFrame
@@ -18,6 +39,8 @@
 #' @importFrom stats pchisq
 #'
 #' @author Jurat Shahidin
+#'
+#' @note Special thanks to Martin Morgan's contribution on this revision
 
 runMSPC <- function(peakset,
                     whichType=c("max","min"),

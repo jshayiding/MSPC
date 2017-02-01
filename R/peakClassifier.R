@@ -49,6 +49,7 @@ peakClassifier <- function(peakList_A,
              please choose set of all discarded ERs")
     }
     stopifnot(is.numeric(tau.s))
+    exportType = match.arg(exportType)
     allERs <- bind_rows(c(confirmed = peakList_A, discarded = peakList_B), .id = "id") %>%
         separate(id, c("isConfirmed", "Sample")) %>%
         mutate(peakStringency = ifelse(p.value <= tau.s,

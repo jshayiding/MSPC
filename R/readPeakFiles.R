@@ -18,6 +18,7 @@
 #' @export
 #' @importFrom rtracklayer import.bed
 #' @importFrom rtracklayer score
+#' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom methods as
 #' @importFrom methods hasArg
 #' @importFrom stats setNames

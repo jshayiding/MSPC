@@ -1,13 +1,25 @@
 # MSPC - an R/Bioconductor Package for Multiple Sample Peak Calling
 #'
 #'
-#' @param peakList
-#' @param pAdjustMethod
-#' @param fdr
-#' @param asPlot
+#' @param peakList set of confirmed peaks through combined stringency test.
+#' @param pAdjustMethod pvalue adjustment method
+#' @param fdr parameter for false discovery rate
+#' @param asPlot logical whether produce graphical plot or not
 #' @return
 #' @export
-#' @importFrom
+#'
+#' @importFrom rtracklayer export.bed
+#' @importFrom methods as
+#' @importFrom magrittr %>%
+#' @importFrom dplyr bind_rows
+#' @importFrom tidyr separate
+#' @importFrom dplyr mutate
+#' @importFrom dplyr count
+#' @importFrom dplyr select
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_col
+#'
 #' @importFrom
 #' @author Jurat Shahidin
 
