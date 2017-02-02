@@ -6,12 +6,11 @@ Author: Jurat Shahidin
 Depends:
     R(>= 3.4)
 Imports:
-    GenomicRanges(>= 1.23.16),
+    GenomicRanges,
     rtracklayer,
-    XVector,
-    S4Vectors (>= 0.9.25),
-    IRanges(>= 2.3.23),
-    BiocGenerics(>= 0.1.0),
+    S4Vectors,
+    IRanges,
+    BiocGenerics,
     dplyr,
     magrittr,
     tibble,
@@ -19,7 +18,7 @@ Imports:
     ggplot2,
     stats,
     methods,
-    data.table,
+    tools,
     utils
 Suggests:
     knitr,
@@ -41,4 +40,4 @@ BugReports: https://github.com/julaiti/MSPC/issues
 biocViews: Software, Sequencing,ChIPSeq, ChipOnChip
 LazyData: TRUE
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.0

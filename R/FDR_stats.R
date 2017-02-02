@@ -1,13 +1,13 @@
 # MSPC - an R/Bioconductor Package for Multiple Sample Peak Calling
 #'
+#' multiple testing correction
 #'
 #' @param peakList set of confirmed peaks through combined stringency test.
 #' @param pAdjustMethod pvalue adjustment method
 #' @param fdr parameter for false discovery rate
 #' @param asPlot logical whether produce graphical plot or not
-#' @return
+#' @return set of enriched regions in BED format file
 #' @export
-#'
 #' @importFrom rtracklayer export.bed
 #' @importFrom methods as
 #' @importFrom magrittr %>%
@@ -19,8 +19,6 @@
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_col
-#'
-#' @importFrom
 #' @author Jurat Shahidin
 
 FDR_stats <- function(peakList,
@@ -46,8 +44,8 @@ FDR_stats <- function(peakList,
     } else {
         DF <- res %>% lapply(select, -c(sample, Output))
         ## Give option to export them as `csv` or `bed`
-        res <- lapply(DF, function(x) as(x, "GRanges"))
-        rslt <- mapply(export.bed, res, paste0(names(res), ".bed"))
+        #res <- lapply(DF, function(x) as(x, "GRanges"))
+        rslt <- mapply(write.csv, res, paste0(names(res), ".csv"))
         return(rslt)
     }
 }

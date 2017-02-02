@@ -14,6 +14,7 @@
 #' @param verbose logical that control whether the output is printed or not
 #' @param pvalueBase User has option to select
 #' p-value format (- log(p.value), -10 log(p.value), -100 log(p.value))
+#'
 #' @return GRanges object
 #' @export
 #' @importFrom rtracklayer import.bed
@@ -24,7 +25,6 @@
 #' @importFrom stats setNames
 #' @importFrom tools file_ext
 #' @author  Jurat Shahidin
-#'
 #' @examples
 #' require(rtracklayer)
 #' require(GenomicRanges)
@@ -36,6 +36,7 @@ readPeakFiles <- function(peakFolder,
                           pvalueBase=1L,
                           verbose=FALSE) {
     # input param checking
+    require(tools)
     if (missing(peakFolder)) {
         stop("Missing required argument peakFolder, please
              choose input Chip-seq replicates in BED file!")

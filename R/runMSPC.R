@@ -37,7 +37,6 @@
 #' @importFrom IRanges splitAsList
 #' @importFrom utils relist
 #' @importFrom stats pchisq
-#'
 #' @author Jurat Shahidin
 #'
 #' @note Special thanks to Martin Morgan's contribution on this revision

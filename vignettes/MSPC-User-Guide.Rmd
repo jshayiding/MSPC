@@ -29,13 +29,7 @@ knitr::opts_chunk$set(tidy         = FALSE,
 library(MSPC)
 library(rtracklayer)
 library(GenomicRanges)
-#library(S4Vectors)
-#library(XVector)
-#library(tidyr)
-#library(tidyverse)
-#library(dplyr)
-#library(magrittr)
-library(data.table)
+library(tidyverse)
 ```
 
 # Abstract 
@@ -122,17 +116,18 @@ simultaneously using lapply. For detailed information, please see
 
 ```{r 'getPeakFile'}
 ## print out all bed file from inst/extdata/
-print(getPeakFile())
+getPeakFile()
 
 ```
 
 ```{r 'readBedAsGR'}
 ## load all peak files as GRanges objects
 bedfiles <- getPeakFile()
-myData <- readPeakFiles(peakFolder = bedfiles, pvalueBase = 1L, verbose = FALSE)
+myData <- readPeakFiles(peakFolder = bedfiles, pvalueBase = 1L)
 
 ## take subset for myData
 inputDat <- myData[4:6]
+options(scipen = 0)
 inputDat
 
 ```
@@ -167,14 +162,13 @@ information, please read help pages ?`denoise_ERs`.
 
 ```{r 'denoise_ERs'}
 ## clean up all background signal by using permissive threshold
-total.ERs <- denoise_ERs(peakGRs = inputDat, tau.w = 1.0E-04, 
-                         fileName = "noise", outDir = getwd(), verbose = FALSE)
+total.ERs <- denoise_ERs(peakGRs = inputDat , tau.w = 1.0E-04, noiLab = "noise")
 
 ## make sure using default scientific notation
 options(scipen = 0)
 
 ## explose all stringent, weak enriched regions
-print(total.ERs)
+total.ERs
 ```
 
 ## Asess peak overlapping across multiple Chip-seq replicate
@@ -207,14 +201,6 @@ order of the input Chip-seq replicates, permuting sample is needed when
 identifying the overlapping peak. For the further detailed information, 
 please review help page ?`peakOverlapping` function.
 
-```{r 'peakOverlapping'}
-## Identify overlapping peak across the multiple Chip-seq replicates
-Hit <- peakOverlapping(peakset = total.ERs, FUN = which.max)
-
-## explore overlap-hit list
-print(Hit)
-```
-
 ## Check minimum overlapping peak requirement
 
 We assess the presence of overlapping peak across multiple Chip-seq replicates
@@ -239,30 +225,29 @@ minimum overlapping peak requirement, these ERs can be expanded as `GRanges`
 objects. For the further detailed information, please review help page
 ?`filterByOverlapHit` method. 
 
+```{r 'confirmedERs'}
+## rescued ERs by Fisher's combined test
+confirmedERs <- runMSPC(peakset = total.ERs, whichType = "max",
+                        replicate.type = "Technical",
+                        cmbStrgThreshold = 1.0E-08, isConfirmed = TRUE)
 
-```{r 'keepList'}
-## Check whether peaks comply minimum overlapping peak requirement or not
-
-## usage of paramter isSuffOverlap = TRUE
-keepList <- filterByOverlapHit(
-  .ovHit = Hit, peakset = total.ERs, 
-  replicate.type = "Biological", isSuffOverlap = TRUE)
-
-## explore ERs that comply min overlapping peak requirement
-print(keepList)
+## Explore all confirmed ERs
+#lapply(confirmedERs, function(x) as(x, "GRanges"))
 ```
 
-```{r 'initDiscERs'}
-## usage of paramter isSuffOverlap = False
-initDiscERs <- filterByOverlapHit(
-  .ovHit = Hit, peakset = total.ERs, 
-  replicate.type = "Biological", isSuffOverlap = FALSE)
+```{r 'DiscardedERs'}
+## ERs that failing for combined stringency test
+discardedERs <- runMSPC(peakset = total.ERs, 
+                        whichType = "max",
+                        replicate.type = "Technical",
+                        cmbStrgThreshold = 1.0E-08, 
+                        isConfirmed = FALSE)
 
-## explore discarded ERs
-print(initDiscERs)
+## Explore all discarded ERs
+#lapply(discardedERs, function(x) as(x, "GRanges"))
 ```
 
-## Fisher's method for ERs that comply minimum overlapping peak requirement
+### Fisher's method for ERs that comply minimum overlapping peak requirement
 
 **MSPC** provides `Fisher_stats` helper function to retrieve the pvalue of all
 enriched regions that comply with minimum overlapping peak requirement, with the correct geometry of overlap hit list, then using `fisherCmbp` function to get global Fisher score. Note that obtained global fisher score correctly matches the original geometry of overlap-hit list by parallel.
@@ -271,16 +256,8 @@ enriched regions that comply with minimum overlapping peak requirement, with the
 requirement; parameter `peakset`, the output of `denoise_ERs`. For the further
 detailed information, please review help page ?`Fisher_stats'. 
 
-```{r 'Fisher_stats'}
-## Global Fisher score
-comb.p <- Fisher_stats(hitList = keepList, peakset = total.ERs)
 
-## Explore Global Fisher' score
-head(comb.p)
-
-```
-
-## Combined Stringency Test
+### Combined Stringency Test
 
 The main idea behind our method is to rescue weakly enriched regions in single
 sample by helping with co-localized overlapping evidence in multiple chip-seq
@@ -299,29 +276,6 @@ samples. Due to repeated evidence across multiple replicates can compensate for
 lower significance in a single sample, an enriched regions might be multiple times
 confirmed or discarded according to different parameter usages. For the further
 detailed information, please review help page ?`filterBycombStringency` method.
-
-```{r 'confirmedERs'}
-## rescued ERs by Fisher's combined test
-confirmedERs <- filterBycombStringency(
-  ERs = total.ERs, .hitList = keepList, 
-   cmbstrgThreshold = 1.0E-08, isFisherPass = TRUE)
-
-## Explore all confirmed ERs
-print(confirmedERs)
-```
-
-```{r 'DiscardedERs'}
-## ERs that failing for combined stringency test
-
-fisherDiscERs <- filterBycombStringency(
-  ERs = total.ERs, .hitList = keepList,
-  cmbstrgThreshold = 1.0E-08, isFisherPass = FALSE)
-
-## get all discarded ERs set that result of two different 
-## permissice threshold test
-DiscardedERs <- mergeDiscERs(initDiscERs, fisherDiscERs)
-print(DiscardedERs)
-```
 
 
 ## Identify and Export stringent/ weak ERs 
@@ -342,13 +296,16 @@ are considered stringent enriched regions, while above this threshold
 is weakly enriched regions. **MSPC** will produce multiple outputs for each Chip-seq replicates. For the sake of easily understand the result, 
 exporting output set as Standard BED format file can be done. All exported output BED file will be placed in vignette folder.  
 
-```{r 'export_ERs'}
+```{r 'peakClassifier'}
 ## Identify & Export Stringent/Weak ERs
-outputSet <- export_ERs(peakList_A = confirmedERs, 
-                        peakList_B = DiscardedERs, tau.s = 1.0E-08)
+outputset <- peakClassifier(peakList_A = confirmedERs, 
+                             peakList_B = discardedERs, 
+                             tau.s = 1.0E-08, 
+                             graphical.output = FALSE, 
+                             exportType = "csv")
 
 ## Explore outputset
-print(outputSet)
+print(outputset)
 
 ```
 
@@ -359,15 +316,6 @@ return stack bar plot for each Chip-seq replicates.
 For the further detailed information, please review 
 help pages ?`getPlot` function. 
 
-
-```{r 'getPlot', fig.height=8, fig.width=12}
-# graphical view of output set
-confirmed <- lapply(confirmedERs, as.data.frame)
-discarded <- lapply(DiscardedERs, as.data.frame)
-
-getPlot(peakList_A = confirmed, peakList_B = discarded, tau.s = 1.0E-08)
-
-```
 
 ## Multiple Testing Correction
 
@@ -392,12 +340,12 @@ Using `anti_join` method from `dplyr` packages make this easy.
 
 ```{r 'FDR_stats'}
 ## Multiple Testing Correction
-BH_output <- FDR_stats(
-  peakList_A = confirmedERs, peakList_B = DiscardedERs, 
-  pAdjustMethod = "BH", replicate.type = "Biological", fdr = 0.05)
+mt_output <- FDR_stats(peakList = confirmedERs, 
+                       pAdjustMethod = "BH", 
+                       fdr = 0.05, asPlot = FALSE)
 
 ## Explore output of BH test
-print(BH_output)
+print(mt_output)
 ```
 
 # Session Information

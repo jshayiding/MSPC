@@ -1,11 +1,12 @@
 # MSPC Package - an R/Bioconductor Package for Multiple Sample Peak Calling
 #'
+#' Identify stringent/weak enriched regions by permissive threshold
 #'
-#' @param peakList_A
-#' @param peakList_B
-#' @param tau.s
-#' @param graphical.output
-#' @return
+#' @param peakList_A set of confirmed peaks
+#' @param peakList_B set of discarded peaks
+#' @param tau.s permissive threshold for stringent peaks
+#' @param graphical.output logical vector
+#' @return set of enriched regions in data.frame
 #' @export
 #' @importFrom methods hasArg
 #' @importFrom rtracklayer export.bed
@@ -31,7 +32,6 @@
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 ggsave
-#'
 #' @author Jurat Shahidin
 
 peakClassifier <- function(peakList_A,

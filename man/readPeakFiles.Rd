@@ -18,8 +18,9 @@ p-value format (- log(p.value), -10 log(p.value), -100 log(p.value))}
 GRanges object
 }
 \description{
-readPeakFiles can read peak file in standard BED format
-using \link[rtracklayer]{import.bed} and stored in
+readPeakFiles can read peak file in standard BED file format
+using \link[rtracklayer]{import.bed} or data.frame like object using
+\link[makeGRangesFromDataFrame]{GenomicRanges} and stored in
 \link[GenomicRanges]{GRanges} object, where several peak files
 can be read simultaneously using lapply. Note that some data
 sources provides Chip-seq enriched regions (A.K.A, peaks)
@@ -36,6 +37,5 @@ files <- getPeakFile()[1:3]
 rd <- readPeakFiles(files, pvalueBase=1L)
 }
 \author{
-Julaiti Shayiding
+Jurat Shahidin
 }
-

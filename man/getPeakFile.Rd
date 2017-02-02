@@ -18,6 +18,5 @@ and let package example data available for use.
 files <- getPeakFile()
 }
 \author{
-Julaiti Shayiding
+Jurat Shahidin
 }
-

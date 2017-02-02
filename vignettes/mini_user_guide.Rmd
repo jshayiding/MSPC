@@ -1,0 +1,84 @@
+---
+title: "mini_user_guide"
+author: "Julaiti Shayiding"
+date: "February 2, 2017"
+output: html_document
+
+vignette: >
+  %\VignetteIndexEntry{mini_user_guide} 
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r style, echo=FALSE, results='asis', message=FALSE}
+BiocStyle::markdown()
+BiocStyle::markdown(css.files = c('custom.css'))
+knitr::opts_chunk$set(tidy         = FALSE,
+                      warning      = FALSE,
+                      message      = FALSE)
+
+```
+
+```{r vignetteSetup, message=FALSE, warning = FALSE}
+library(MSPC)
+library(rtracklayer)
+library(GenomicRanges)
+library(tidyverse)
+```
+
+```{r 'readPeakFile'}
+## load all peak files as GRanges objects
+bedfiles <- getPeakFile()[1:3]
+myData <- readPeakFiles(peakFolder = bedfiles, pvalueBase = 1L)
+
+```
+
+```{r 'denoise_ERs'}
+## clean up all background signal by using permissive threshold
+total.ERs <- denoise_ERs(peakGRs = inputDat , tau.w = 1.0E-04, noiLab = "noise")
+total.ERs
+```
+
+```{r}
+## rescued ERs by Fisher's combined test
+confirmedERs <- runMSPC(peakset = total.ERs, whichType = "max",
+                        replicate.type = "Technical",
+                        cmbStrgThreshold = 1.0E-08, isConfirmed = TRUE)
+
+confirmedERs
+```
+
+```{r}
+## ERs that failing for combined stringency test
+discardedERs <- runMSPC(peakset = total.ERs, whichType = "max",
+                        replicate.type = "Technical",
+                        cmbStrgThreshold = 1.0E-08, 
+                        isConfirmed = FALSE)
+
+discardedERs
+```
+
+```{r 'peakClassifier'}
+## Identify & Export Stringent/Weak ERs
+outputset <- peakClassifier(peakList_A = confirmedERs, 
+                             peakList_B = discardedERs, 
+                             tau.s = 1.0E-08, 
+                             graphical.output = FALSE, 
+                             exportType = "csv")
+
+outputset
+```
+
+```{r 'FDR_stats'}
+## Multiple Testing Correction
+mtc_output <- FDR_stats(peakList = confirmedERs, 
+                       pAdjustMethod = "BH", 
+                       fdr = 0.05, asPlot = FALSE)
+
+mtc_output
+```
+

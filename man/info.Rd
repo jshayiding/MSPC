@@ -2,13 +2,12 @@
 % Please edit documentation in R/MSPC_package.R
 \docType{data}
 \name{info}
-\alias{bed}
 \alias{info}
-\alias{tagMatrixList}
 \alias{ucsc_release}
+\alias{bed}
+\alias{tagMatrixList}
 \title{Information Datasets}
 \description{
 ucsc genome version, bed format files
 }
 \keyword{datasets}
-

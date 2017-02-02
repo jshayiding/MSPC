@@ -2,11 +2,11 @@
 % Please edit documentation in R/MSPC_package.R
 \docType{package}
 \name{MSPC-package}
-\alias{Calling}
 \alias{MSPC-package}
 \alias{Multiple}
-\alias{Peak}
 \alias{Sample}
+\alias{Peak}
+\alias{Calling}
 \title{Bioconductor Package for Multiple Sample Peak Calling}
 \description{
 This package is designed for chip-seq data analysis
@@ -25,4 +25,3 @@ Julaiti Shayiding
 Maintainer: Julaiti Shayiding \email{juratbupt@gmail.com}
 }
 \keyword{package}
-

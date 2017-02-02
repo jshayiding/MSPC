@@ -49,6 +49,7 @@
 #' ## Explore all stringent and weak enriched regions
 #' total.ERs
 
+
 denoise_ERs <- function(peakGRs,
                         tau.w = 1.0E-04,
                         noiLab ="noise",
