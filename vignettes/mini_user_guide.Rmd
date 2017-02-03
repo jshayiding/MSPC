@@ -39,7 +39,9 @@ myData <- readPeakFiles(peakFolder = bedfiles, pvalueBase = 1L)
 
 ```{r 'denoise_ERs'}
 ## clean up all background signal by using permissive threshold
-total.ERs <- denoise_ERs(peakGRs = inputDat , tau.w = 1.0E-04, noiLab = "noise")
+total.ERs <- denoise_ERs(peakGRs = myData , tau.w = 1.0E-04, noiLab = "noise")
+
+options(scipen = 0)
 total.ERs
 ```
 
@@ -49,7 +51,7 @@ confirmedERs <- runMSPC(peakset = total.ERs, whichType = "max",
                         replicate.type = "Technical",
                         cmbStrgThreshold = 1.0E-08, isConfirmed = TRUE)
 
-confirmedERs
+lapply(confirmedERs, head)
 ```
 
 ```{r}
@@ -59,7 +61,7 @@ discardedERs <- runMSPC(peakset = total.ERs, whichType = "max",
                         cmbStrgThreshold = 1.0E-08, 
                         isConfirmed = FALSE)
 
-discardedERs
+lapply(discardedERs, head)
 ```
 
 ```{r 'peakClassifier'}
@@ -67,10 +69,9 @@ discardedERs
 outputset <- peakClassifier(peakList_A = confirmedERs, 
                              peakList_B = discardedERs, 
                              tau.s = 1.0E-08, 
-                             graphical.output = FALSE, 
-                             exportType = "csv")
+                             graphical.output = FALSE)
 
-outputset
+print(outputset)
 ```
 
 ```{r 'FDR_stats'}
@@ -79,6 +80,6 @@ mtc_output <- FDR_stats(peakList = confirmedERs,
                        pAdjustMethod = "BH", 
                        fdr = 0.05, asPlot = FALSE)
 
-mtc_output
+print(mtc_output)
 ```
 
