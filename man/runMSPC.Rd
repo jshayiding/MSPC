@@ -5,8 +5,8 @@
 \title{Assess overlapping enriched regions across multiple sample}
 \usage{
 runMSPC(peakset, whichType = c("max", "min"),
-  replicate.type = c("Biological", "Technical"),
-  cmbStrgThreshold = 0.00000001, isConfirmed = TRUE)
+  replicate.type = c("Biological", "Technical"), cmbStrgThreshold = 1e-08,
+  isConfirmed = TRUE)
 }
 \arguments{
 \item{peakset}{the output of \link{denoise_ERs}.

@@ -45,7 +45,7 @@
 #'
 #' ## Exclude background noise
 #' total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
-#'                         noiLab = "noise", outDir = getwd(), overwrite=FALSE)
+#'                         noiLab = "noise", outDir = getwd())
 #' ## Explore all stringent and weak enriched regions
 #' total.ERs
 

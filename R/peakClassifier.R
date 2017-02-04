@@ -32,6 +32,8 @@
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 ggsave
+#' @importFrom purrr walk
+#' @importFrom purrr walk2
 #' @author Jurat Shahidin
 
 peakClassifier <- function(peakList_A,

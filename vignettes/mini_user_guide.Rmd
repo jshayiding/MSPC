@@ -27,7 +27,6 @@ knitr::opts_chunk$set(tidy         = FALSE,
 library(MSPC)
 library(rtracklayer)
 library(GenomicRanges)
-library(tidyverse)
 ```
 
 ```{r 'readPeakFile'}

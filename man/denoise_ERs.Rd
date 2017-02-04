@@ -4,7 +4,7 @@
 \alias{denoise_ERs}
 \title{Exclude all background signal (a.k.a, noise) from input Chip-seq samples}
 \usage{
-denoise_ERs(peakGRs, tau.w = 0.0001, noiLab = "noise", outDir = tempdir())
+denoise_ERs(peakGRs, tau.w = 1e-04, noiLab = "noise", outDir = tempdir())
 }
 \arguments{
 \item{peakGRs}{list of Chip-seq replicate imported and

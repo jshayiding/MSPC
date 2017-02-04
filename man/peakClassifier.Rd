@@ -4,8 +4,8 @@
 \alias{peakClassifier}
 \title{Identify stringent/weak enriched regions by permissive threshold}
 \usage{
-peakClassifier(peakList_A, peakList_B, tau.s = 0.00000001,
-  graphical.output = TRUE, exportType = c("bed", "csv"))
+peakClassifier(peakList_A, peakList_B, tau.s = 1e-08,
+  graphical.output = TRUE)
 }
 \arguments{
 \item{peakList_A}{set of confirmed peaks}
