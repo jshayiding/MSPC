@@ -47,9 +47,9 @@ runMSPC <- function(peakset,
                     cmbStrgThreshold=1.0E-08,
                     isConfirmed=TRUE) {
     # sanity input param checking
-    if (class(peakset) != "GRangesList") {
-        stop("input must be a GRangesList Object")
-    }
+    # if (class(peakset) != "GRangesList") {
+    #     stop("input must be a GRangesList Object")
+    # }
     whichType = match.arg(whichType)
     replicate.type = match.arg(replicate.type)
     stopifnot(length(peakset)>0)
@@ -87,6 +87,6 @@ runMSPC <- function(peakset,
     gr <- relist(allPeaks, peakset)[relist(Keep, peakset)]
     # Make sure `gr` returned as `data.frame`
     # Find out better way to produce data.frame list, instead of using `lapply`
-    res <- lapply(gr, as.data.frame)
-    return(res)
+    #res <- lapply(gr, data.frame)
+    return(gr)
 }

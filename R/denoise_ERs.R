@@ -49,11 +49,9 @@
 #' ## Explore all stringent and weak enriched regions
 #' total.ERs
 
-
 denoise_ERs <- function(peakGRs,
                         tau.w = 1.0E-04,
                         noiLab ="noise",
-                        overwrite=FALSE,
                         outDir = tempdir()) {
     # check input param
     if (class(peakGRs) != "GRangesList") {
@@ -70,12 +68,12 @@ denoise_ERs <- function(peakGRs,
                   levels = names(peakGRs))
     Drop <- gr$p.value > tau.w
     noise <- split(gr[Drop], idx[Drop])
-    if (!overwrite)
-        stop("noise peak files are already exist")
+    # if (!overwrite)
+    #     stop("noise peak files are already exist")
     for(i in seq_along(noise)) {
         filename <- paste(names(noise)[i], ".bed", sep = "")
         export.bed(noise[[i]], sprintf("%s/%s.%s", outDir, noiLab,filename))
     }
     res <- split(gr[!Drop], idx[!Drop])
-    return(res)
+    return(GRangesList(res))
 }

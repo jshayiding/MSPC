@@ -32,6 +32,7 @@ FDR_stats <- function(peakList,
     }
     pAdjustMethod = match.arg(pAdjustMethod)
     stopifnot(is.numeric(fdr))
+    peakList <- lapply(peakList, data.frame)
     res <- bind_rows(peakList, .id = "id") %>%
         separate(id, "sample") %>%
         mutate(adjust.pvalue = p.adjust(p.value, method = pAdjustMethod),
@@ -45,7 +46,7 @@ FDR_stats <- function(peakList,
         DF <- res %>% lapply(select, -c(sample, Output))
         ## Give option to export them as `csv` or `bed`
         #res <- lapply(DF, function(x) as(x, "GRanges"))
-        rslt <- mapply(write.csv, res, paste0(names(res), ".csv"))
+        rslt <- mapply(write.csv, DF, paste0(names(DF), ".csv"))
         return(rslt)
     }
 }

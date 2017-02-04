@@ -37,8 +37,7 @@
 peakClassifier <- function(peakList_A,
                            peakList_B,
                            tau.s=1.0E-08,
-                           graphical.output=TRUE,
-                           exportType=c("bed", "csv")) {
+                           graphical.output=TRUE) {
     # sanity check for input param
     if(!hasArg(peakList_A)) {
         stop("required arguments is missing,
@@ -48,8 +47,10 @@ peakClassifier <- function(peakList_A,
         stop("required arguments is missing,
              please choose set of all discarded ERs")
     }
+    peakList_A <- lapply(peakList_A, data.frame)
+    peakList_B <- lapply(peakList_B, data.frame)
     stopifnot(is.numeric(tau.s))
-    exportType = match.arg(exportType)
+    #exportType = match.arg(exportType)
     allERs <- bind_rows(c(confirmed = peakList_A, discarded = peakList_B), .id = "id") %>%
         separate(id, c("isConfirmed", "Sample")) %>%
         mutate(peakStringency = ifelse(p.value <= tau.s,
@@ -75,16 +76,13 @@ peakClassifier <- function(peakList_A,
                   axis.text.x = element_text(angle=70, vjust=0.6))
         ggsave("graphical_output.png", width = 14, height = 10)
     } else {
-        DF <- allERs %>% map(~.[setdiff(names(.), c("isConfirmed","peakStringency","Sample"))])
-        if(exportType=="bed"){
-            asGRs <- lapply(DF, function(x) as(x, "GRanges"))
-            mapply(export.bed, asGRs, paste0(names(asGRs), ".bed"))
-        } else {
-            dir_names <- gsub("\\..+","",names(DF)) %>%
-                unique() %>% walk(dir.create)
-            purrr::walk2(DF,names(DF), function(x,y)
-                write.csv(x,paste0(gsub("\\..+","",y),"/",y,".csv")))
-        }
+        DF <- allERs %>% map(~.[setdiff(names(.),
+                                        c("isConfirmed","peakStringency","Sample"))])
+        dir_names <- gsub("\\..+","",names(DF)) %>%
+            unique() %>% walk(dir.create)
+        res <- purrr::walk2(DF,names(DF), function(x,y)
+            write.csv(x,paste0(gsub("\\..+","",y),"/",y,".csv")))
+        return(res)
     }
 }
 
