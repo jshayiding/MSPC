@@ -1,7 +1,7 @@
 Package: MSPC
 Type: Package
 Title: Multiple Sample Peak Calling: Using combined evidence from replicates to evaluate ChIP-seq peaks
-Version: 0.99.4
+Version: 0.99.5
 Author: Jurat Shahidin
 Depends:
     R(>= 3.4)
