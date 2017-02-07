@@ -26,12 +26,11 @@ stringent/weak peak set
 \description{
 ChIP-Seq detects genome-wide DNA protein interaction,
 returning enriched regions which associated with significance score.
-Using permissive threshold tau.s for signal significant
-value of stringent enriched region, we could identify
-set of stringent, weakly enriched regions by the output of
-\link{runMSPC}. All ERs in different group can be
+Using permissive threshold tau.s for stringent enriched region,
+we could identify set of stringent, weakly enriched regions by the
+output of \link{runMSPC}. All ERs in different group can be
 exported as either BED format file by using \link[rtracklayer]{export.bed},
-or csv.
+or csv by \link[utils]{write.csv}.
 }
 \examples{
 # set up

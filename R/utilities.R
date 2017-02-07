@@ -14,7 +14,7 @@
 
 getPeakFile <- function() {
     dir <- system.file("extdata", package="MSPC")
-    files <- list.files(dir, full=TRUE)
+    files <- list.files(dir, recursive = TRUE, full.names = TRUE)
     # ChipPeak <- gsub(pattern='wgEncode\\d+_(\\w+_\\w+)_.*',
     #                  replacement='\\1',files)
     # ChipPeak <- sub("_Chip.+", "", ChipPeak)

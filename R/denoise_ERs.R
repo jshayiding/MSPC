@@ -1,12 +1,12 @@
-#' Data cleaning (exclude noise from input sample)
+#' Data cleaning
 #'
 #' Given the output of \link{readPeakFiles}, We set up
 #' permissive p-value threshold \code{tau.w} for weakly
 #' enriched regions associated with score and p-value.
-#' We are interested in moderately enriched regions
-#' (or weak peak), but extremely weakly enriched regions
+#' We are interested in moderately enriched regions ,
+#' but extremely weakly enriched regions
 #' must be removed from all candidate sample because it
-#' won’t give any biological insight. Note that p-value
+#' will not give any biological insight. Note that p-value
 #' threshold can be tuned by users, so using different
 #' threshold value will result in different filtering results.
 #' Background signal (A.K.A, noise) also exported as standard

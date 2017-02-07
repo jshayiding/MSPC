@@ -2,7 +2,7 @@
 % Please edit documentation in R/denoise_ERs.R
 \name{denoise_ERs}
 \alias{denoise_ERs}
-\title{Data cleaning (exclude noise from input sample)}
+\title{Data cleaning}
 \usage{
 denoise_ERs(peakGRs, tau.w = 1e-04, nmtab = "noise", dest.dir = tempdir(),
   overwrite = FALSE)
@@ -31,14 +31,14 @@ stoted in \link[GenomicRanges]{GRangesList}
 Given the output of \link{readPeakFiles}, We set up
 permissive p-value threshold \code{tau.w} for weakly
 enriched regions associated with score and p-value.
-We are interested in moderately enriched regions
-(A.K.A, weak peak), but extremely weakly enriched regions
-won’t give any biological insight and must be removed from
-all candidate sample. Note that p-value threshold can be
-tuned by users, so using different threshold value will
-result in different filtering results. Background signal
-(A.K.A, noise) also exported as standard BED file by
-using \link[rtracklayer]{export.bed} for the sake of
+We are interested in moderately enriched regions ,
+but extremely weakly enriched regions
+must be removed from all candidate sample because it
+will not give any biological insight. Note that p-value
+threshold can be tuned by users, so using different
+threshold value will result in different filtering results.
+Background signal (A.K.A, noise) also exported as standard
+BED file by using \link[rtracklayer]{export.bed} for the sake of
 evaluate each ChIP-Seq replicate that bearing different
 output set with clear biological evidence.
 }

@@ -26,7 +26,7 @@ where several peak files can be read simultaneously
 using lapply. Note that some data sources provide ChIP-Seq
 enriched regions without p-value under specific
 conditions. In our workflow, we are going to evaluate each
-peak interval with p-value threshold, so represent peaks’ score
+peak interval with p-value threshold, so represent peak's score
 as p-value is needed.
 }
 \details{

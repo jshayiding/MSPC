@@ -2,7 +2,7 @@
 #'
 #' Multiple testing correction
 #'
-#' Given the output of \link{runMSPC}, we'll get set peaks which comply with
+#' Given the output of \link{runMSPC}, we obtained set of peak which comply with
 #' combined stringency test by Fisher method, and classified as confirmed peaks.
 #' However, we need to further evaluate set of confirmed peaks
 #' with multiple testing corrections procedure, and produce final output set.
