@@ -10,10 +10,8 @@ Imports:
     rtracklayer,
     S4Vectors,
     IRanges,
-    BiocGenerics,
     dplyr,
     magrittr,
-    tibble,
     purrr,
     tidyr,
     ggplot2,
@@ -25,6 +23,7 @@ Suggests:
     knitr,
     rmarkdown,
     testthat,
+    BiocGenerics,
     BiocStyle
 Maintainer: Jurat Shahidin <juratbupt@gmail.com>
 Description: This packages implements set of functions to retrieve overlapped
