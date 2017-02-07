@@ -7,7 +7,7 @@
 readPeakFiles(peakFolder, pvalueBase = 1L, verbose = FALSE)
 }
 \arguments{
-\item{peakFolder}{set of ChipSeq peak replicate in BED format file}
+\item{peakFolder}{ChipSeq peak replicate either in BED format or data.frame}
 
 \item{pvalueBase}{User has option to select
 p-value format (- log(p.value), -10 log(p.value), -100 log(p.value))}
@@ -18,13 +18,16 @@ p-value format (- log(p.value), -10 log(p.value), -100 log(p.value))}
 GRanges object
 }
 \description{
-readPeakFiles can read peak file in standard BED file format
-using \link[rtracklayer]{import.bed} or data.frame like object using
-\link[makeGRangesFromDataFrame]{GenomicRanges} and stored in
-\link[GenomicRanges]{GRanges} object, where several peak files
-can be read simultaneously using lapply. Note that some data
-sources provides Chip-seq enriched regions (A.K.A, peaks)
-without p-value under specific conditions.
+This function can read peak file in standard BED file
+using \link[rtracklayer]{import.bed} or data.frame like object
+using \link[GenomicRanges]{makeGRangesFromDataFrame}
+and stored in \link[GenomicRanges]{GRanges} object,
+where several peak files can be read simultaneously
+using lapply. Note that some data sources provide ChIP-Seq
+enriched regions without p-value under specific
+conditions. In our workflow, we are going to evaluate each
+peak interval with p-value threshold, so represent peaks’ score
+as p-value is needed.
 }
 \details{
 Passed to \link{denoise_ERs}
@@ -32,9 +35,10 @@ Passed to \link{denoise_ERs}
 \examples{
 require(rtracklayer)
 require(GenomicRanges)
+
 ## get bed file
 files <- getPeakFile()[1:3]
-rd <- readPeakFiles(files, pvalueBase=1L)
+readPeakFiles(files, pvalueBase=1L)
 }
 \author{
 Jurat Shahidin

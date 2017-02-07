@@ -2,7 +2,7 @@
 % Please edit documentation in R/FDR_stats.R
 \name{FDR_stats}
 \alias{FDR_stats}
-\title{multiple testing correction}
+\title{Multiple testing correction}
 \usage{
 FDR_stats(peakList, pAdjustMethod = "BH", fdr = 0.05, asPlot = TRUE)
 }
@@ -19,7 +19,33 @@ FDR_stats(peakList, pAdjustMethod = "BH", fdr = 0.05, asPlot = TRUE)
 set of enriched regions in BED format file
 }
 \description{
-multiple testing correction
+Given the output of \link{runMSPC}, we'll get set peaks which comply with
+combined stringency test by Fisher method, and classified as confirmed peaks.
+However, we need to further evaluate set of confirmed peaks
+with multiple testing corrections procedure, and produce final output set.
+}
+\examples{
+# set up
+library(GenomicRanges)
+library(rtracklayer)
+
+# load peak files
+files <- getPeakFile()[1:3]
+grs <- readPeakFiles(files, pvalueBase=1L)
+
+## Exclude background noise
+total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
+                        overwrite = TRUE)
+
+## explore set of confirmed, discarde peaks
+confirmedERs <- runMSPC(peakset = total.ERs, whichType = "max",
+                        cmbStrgThreshold = 1.0E-08, isConfirmed = TRUE)
+
+# multiple testing correction
+FDR_stats(peakList = confirmedERs,
+          pAdjustMethod = "BH",
+          fdr = 0.05, asPlot =FALSE )
+
 }
 \author{
 Jurat Shahidin

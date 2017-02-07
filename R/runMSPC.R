@@ -1,7 +1,11 @@
-# MSPC - an R/Bioconductor package for Multiple Sample Peak Calling
-#
 #' Assess overlapping enriched regions across multiple sample
 #'
+#' We assess the presence of overlapping enriched regions
+#' (A.K.A peaks) across multiple sample simultaneously,
+#' repeated evidence over multiple replicates can compensate
+#' for lower significance in a single sample, using Fisher method
+#' to increase the statistical significance of weak evidence which
+#' might get involved in TF or gene regulation.
 #'
 #' @param peakset the output of \link{denoise_ERs}.
 #' set of Chip-seq replicate imported and all peaks are stored in
@@ -16,18 +20,20 @@
 #'
 #' @param cmbStrgThreshold combined stringency threshold
 #' against all enriched regions p-value, so we could identify
-#' whether ERs fulfill stringency test,
-#' and result can be set of confirmed/discarded peaks respectively.
+#' whether ERs fulfill combined stringency test, and result can be
+#' set of confirmed/discarded peaks respectively.
 #'
 #' @param isConfirmed logical vector that check whether ERs
 #' comply combined stringency test.
 #'
 #' @return
 #' \code{isConfirmed} is \code{True}:
-#' return set of enriched regions passed from combined stringency test
+#' return set of peaks that  both passed from minimum overlapping
+#' peak criteria and combined stringency test (Fisher method)
 #'
 #' \code{isConfirmed} is \code{False} :
-#' return set of enriched regions that failed from Fisher method
+#' return set of peaks either  failed from Fisher method or
+#' minimum overlapping requirement.
 #'
 #' @export
 #' @importFrom GenomicRanges findOverlaps
@@ -35,11 +41,33 @@
 #' @importFrom S4Vectors queryHits
 #' @importFrom S4Vectors subjectHits
 #' @importFrom IRanges splitAsList
-#' @importFrom utils relist
+#' @importFrom IRanges relist
 #' @importFrom stats pchisq
+#' @importFrom rtracklayer mcols
+#'
 #' @author Jurat Shahidin
 #'
 #' @note Special thanks to Martin Morgan's contribution on this revision
+#'
+#' @examples
+#' # set up
+#' library(GenomicRanges)
+#' library(rtracklayer)
+#'
+#' # load peak files
+#' files <- getPeakFile()[1:3]
+#' grs <- readPeakFiles(files, pvalueBase=1L)
+#'
+#' ## Exclude background noise
+#' total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
+#'                         overwrite = TRUE)
+#'
+#' ## explore set of confirmed, discarde peaks
+#' confirmedERs <- runMSPC(peakset = total.ERs, whichType = "max",
+#'                         cmbStrgThreshold = 1.0E-08, isConfirmed = TRUE)
+#' discardedERs <- runMSPC(peakset = total.ERs, whichType = "max",
+#'                         cmbStrgThreshold = 1.0E-08, isConfirmed = FALSE)
+
 
 runMSPC <- function(peakset,
                     whichType=c("max","min"),
@@ -47,9 +75,6 @@ runMSPC <- function(peakset,
                     cmbStrgThreshold=1.0E-08,
                     isConfirmed=TRUE) {
     # sanity input param checking
-    # if (class(peakset) != "GRangesList") {
-    #     stop("input must be a GRangesList Object")
-    # }
     whichType = match.arg(whichType)
     replicate.type = match.arg(replicate.type)
     stopifnot(length(peakset)>0)
@@ -85,8 +110,5 @@ runMSPC <- function(peakset,
     if(!isConfirmed)
         Keep <- !(Keep)
     gr <- relist(allPeaks, peakset)[relist(Keep, peakset)]
-    # Make sure `gr` returned as `data.frame`
-    # Find out better way to produce data.frame list, instead of using `lapply`
-    #res <- lapply(gr, data.frame)
     return(gr)
 }
