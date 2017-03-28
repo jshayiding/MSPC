@@ -2,51 +2,89 @@
 % Please edit documentation in R/FDR_stats.R
 \name{FDR_stats}
 \alias{FDR_stats}
-\title{Multiple testing correction}
+\title{Multiple Testing Correction}
 \usage{
-FDR_stats(peakList, pAdjustMethod = "BH", fdr = 0.05, asPlot = TRUE)
+FDR_stats(peakList_A, peakList_B, pAdjustMethod = "BH", fdr = 0.05,
+  replicate.type = c("Biological", "Technical"))
 }
 \arguments{
-\item{peakList}{set of confirmed peaks through combined stringency test.}
+\item{peakList_A}{output of \link{filterBycombStringency},
+is set of all confirmed ERs
+in \link[GenomicRanges]{GRanges} objects.}
+
+\item{peakList_B}{output of \link{mergeDiscERs},
+is set of all discarded ERs
+in \link[GenomicRanges]{GRanges} objects.}
 
 \item{pAdjustMethod}{pvalue adjustment method}
 
-\item{fdr}{parameter for false discovery rate}
+\item{fdr}{parameter for false discovery rate;}
 
-\item{asPlot}{logical whether produce graphical plot or not}
+\item{replicate.type}{A charcter vector used to select
+type of Chip-seq replicate ( Biological / Technical replicate).}
 }
 \value{
-set of enriched regions in BED format file
+output of multiple testing correction can be exported as
+BED file by using \link[rtracklayer]{export.bed} method.
 }
 \description{
-Given the output of \link{runMSPC}, we obtained set of peak which comply with
-combined stringency test by Fisher method, and classified as confirmed peaks.
-However, we need to further evaluate set of confirmed peaks
-with multiple testing corrections procedure, and produce final output set.
+We distinguish Technical and Biological Chip-seq replicates.
+Technical replicates aim at controlling the variability of
+the experimental procedure used to obtain the data should
+yield exactly the same result in the absence of experimental noise.
+If user choose replicate type as `Technical`, then enriched regions
+were passed in one test
+(A.K.A, comply minimum overlapping peak requirement) but failed
+in the another (A.K.A, combined stringency test with Fisher's method),
+these peaks won't be appeared in final output.
+Given the output of \link{filterBycombStringency},
+we decided to use intermediate set purification
+to further check any ERs both exist in confirmed, discarded ERs set.
+We kept all confirmed ERs, discarded ERs in the list,
+so using `anti_join` method from dplyr packages
+make set purification easy. However, we need to correct
+the p.value of ERs using the Benjamini-Hochberg
+multiple testing correction with user-specified false discovery rate,
+using \link[stats]{p.adjust} to do BH correction method,  which yields
+multiple-testing confirmed or discarded ERs.
 }
 \examples{
-# set up
-library(GenomicRanges)
-library(rtracklayer)
+require(GenomicRanges)
+require(rtracklayer)
+require(XVector)
 
-# load peak files
-files <- getPeakFile()[1:3]
-grs <- readPeakFiles(files, pvalueBase=1L)
+## prepare list of confirmedERs, discardedERs
+confirmedERs <- GRangesList(
+    cat = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
+        strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"),
+        score=c(14,9,17),p.value=c(1e-14,1e-09,1e-17)),
+    bar = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
+        strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"),
+        score=c(22,6,13),p.value=c(1e-22,1e-06,1e-13))
+)
 
-## Exclude background noise
-total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
-                        overwrite = TRUE)
+discardedERs <- GRangesList(
+    bar = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(6,25,40), c(12,33,49)),
+        strand = Rle(c("*"),3), rangeName=c("a2","a5","a8"),
+        score=c(3,12,4),p.value=c(1e-03,1e-12,1e-04)),
+    cat = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(15,19,47), c(18,28,55)),
+        strand = Rle(c("*"),3), rangeName=c("b4","b6","b9"),
+        score=c(11,3,6),p.value=c(1e-11,1e-03,1e-06))
+)
 
-## explore set of confirmed, discarde peaks
-confirmedERs <- runMSPC(peakset = total.ERs, whichType = "max",
-                        cmbStrgThreshold = 1.0E-08, isConfirmed = TRUE)
+## call FDR_stats to create output set
+BH_output <- FDR_stats(
+    peakList_A = confirmedERs,peakList_B = discardedERs,
+    pAdjustMethod = "BH", fdr = 0.05,
+    replicate.type = "Technical")
 
-# multiple testing correction
-FDR_stats(peakList = confirmedERs,
-          pAdjustMethod = "BH",
-          fdr = 0.05, asPlot =FALSE )
-
+## Explore output of multiple testting correction
+BH_output
 }
 \author{
-Jurat Shahidin
+Julaiti Shayiding
 }

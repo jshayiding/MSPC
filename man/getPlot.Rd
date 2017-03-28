@@ -7,10 +7,10 @@
 getPlot(peakList_A, peakList_B, tau.s = 1e-08)
 }
 \arguments{
-\item{peakList_A}{output of \link{runMSPC},
+\item{peakList_A}{output of \link{filterBycombStringency},
 is set of all confirmed ERs in \link[GenomicRanges]{GRanges} objects.}
 
-\item{peakList_B}{output of \link{runMSPC},
+\item{peakList_B}{output of \link{mergeDiscERs},
 is set of all discarded ERs in \link[GenomicRanges]{GRanges} objects.}
 
 \item{tau.s}{permissive threshold for stringent enriched regions,
@@ -26,28 +26,39 @@ analysis result, using \link[ggplot2]{ggplot} to generate
 stack bar plot for each Chip-seq replicates can be done.
 }
 \examples{
-# set up
-library(GenomicRanges)
-library(rtracklayer)
+require(GenomicRanges)
+require(rtracklayer)
+require(XVector)
+require(ggplot2)
 
-# load peak files
-files <- getPeakFile()[1:3]
-grs <- readPeakFiles(files, pvalueBase=1L)
+## prepare list of confirmedERs, discardedERs
+confirmedERs <- GRangesList(
+    cat = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
+        strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"),
+        score=c(14,9,17),p.value=c(1e-14,1e-09,1e-17)),
+    bar = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
+        strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"),
+        score=c(22,6,13),p.value=c(1e-22,1e-06,1e-13))
+)
 
-## Exclude background noise
-total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
-                        overwrite = TRUE)
+discardedERs <- GRangesList(
+    bar = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(6,25,40), c(12,33,49)),
+        strand = Rle(c("*"),3), rangeName=c("a2","a5","a8"),
+        score=c(13,2,4),p.value=c(1e-13,1e-02,1e-04)),
+    cat = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(15,19,47), c(18,28,55)),
+        strand = Rle(c("*"),3), rangeName=c("b4","b6","b9"),
+        score=c(11,3,6),p.value=c(1e-11,1e-03,1e-06))
+)
 
-## explore set of confirmed, discarde peaks
-confirmedERs <- runMSPC(peakset = total.ERs, whichType = "max",
-                        cmbStrgThreshold = 1.0E-08, isConfirmed = TRUE)
-discardedERs <- runMSPC(peakset = total.ERs, whichType = "max",
-                        cmbStrgThreshold = 1.0E-08, isConfirmed = FALSE)
+## visualize output
+output <- getPlot(
+  peakList_A=confirmedERs, peakList_B=discardedERs, tau.s=1.0E-08)
 
-# Visualize the output set for file bar
-getPlot(peakList_A = confirmedERs,
-        peakList_B = discardedERs, tau.s = 1.0E-08)
 }
 \author{
-Jurat Shahidin
+Julaiti Shayiding
 }

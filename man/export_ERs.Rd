@@ -4,59 +4,70 @@
 \alias{export_ERs}
 \title{Identify and Export stringent/ weak ERs}
 \usage{
-export_ERs(peakList_A, peakList_B, tau.s = 1e-08, exportFormat = c("bed",
-  "csv"))
+export_ERs(peakList_A, peakList_B, tau.s = 1e-08)
 }
 \arguments{
-\item{peakList_A}{output of \link{runMSPC}, is set of ERs
-that fulfill combined stringency test, rescued by Fisher's method,
-also known as confirmed ERs.}
+\item{peakList_A}{output of \link{filterBycombStringency},
+is set of ERs that fulfill combined stringency test,
+and rescued by Fisher's method, also known as confirmed ERs.}
 
-\item{peakList_B}{output of \link{runMSPC}, is set of discarded ERs
-that failing from combined stringency test and minimum overlapping peak requirement}
+\item{peakList_B}{output of \link{mergeDiscERs},
+is set of discarded ERs that failing from combined stringency test
+and minimum overlapping peak requirement}
 
 \item{tau.s}{permissive threshold value for stringent ERs,
 all ERs' pvalue below this value, are considered as stringent ERs.}
-
-\item{exportFormat}{user has an option to export the result either BED format file or csv.}
 }
 \value{
-stringent/weak peak set
+stringent/weak ERs can be exported as BED file by using
+\link[rtracklayer]{export.bed}
 }
 \description{
-ChIP-Seq detects genome-wide DNA protein interaction,
-returning enriched regions which associated with significance score.
-Using permissive threshold tau.s for stringent enriched region,
-we could identify set of stringent, weakly enriched regions by the
-output of \link{runMSPC}. All ERs in different group can be
-exported as either BED format file by using \link[rtracklayer]{export.bed},
-or csv by \link[utils]{write.csv}.
+Chip-seq detects genome-wide DNA protein interation,
+returing enriched regions which associated with significance score.
+Using permissive threshold tau.s for signal' significant
+value of stringent enriched region, we could identify
+set of stringent, weakly enriched regions by the output of
+\link{filterBycombStringency}. All ERs in different group can be
+exported as BED file by using \link[rtracklayer]{export.bed}.
 }
 \examples{
-# set up
-library(GenomicRanges)
-library(rtracklayer)
+require(GenomicRanges)
+require(rtracklayer)
+require(tidyr)
+require(tidyverse)
 
-# load peak files
-files <- getPeakFile()[1:3]
-grs <- readPeakFiles(files, pvalueBase=1L)
+## list of confirmedERs, discardedERs
+confirmedERs <- GRangesList(
+    cat = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
+        strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"),
+        score=c(14,9,17),p.value=c(1e-14,1e-09,1e-17)),
+    bar = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
+        strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"),
+        score=c(22,6,13),p.value=c(1e-22,1e-06,1e-13))
+)
 
-## Exclude background noise
-total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
-                        overwrite = TRUE)
+discardedERs <- GRangesList(
+    bar = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(6,25,40), c(12,33,49)),
+        strand = Rle(c("*"),3), rangeName=c("a2","a5","a8"),
+        score=c(3,2,14),p.value=c(1e-03,1e-02,1e-14)),
+    cat = GRanges(
+        seqnames=Rle("chr1", 3),ranges=IRanges(c(15,19,47), c(18,28,55)),
+        strand = Rle(c("*"),3), rangeName=c("b4","b6","b9"),
+        score=c(3,13,16),p.value=c(1e-03,1e-13,1e-16))
+)
 
-## explore set of confirmed, discarde peaks
-confirmedERs <- runMSPC(peakset = total.ERs, whichType = "max",
-                        cmbStrgThreshold = 1.0E-08, isConfirmed = TRUE)
-discardedERs <- runMSPC(peakset = total.ERs, whichType = "max",
-                        cmbStrgThreshold = 1.0E-08, isConfirmed = FALSE)
+## Identify and Export Stringent/Weak ERs
 
-## explore the peaks in different output set for file bar
-export_ERs(peakList_A = confirmedERs,
-           peakList_B = discardedERs,
-           tau.s = 1.0E-08, exportFormat = "csv")
+output <- export_ERs(
+    peakList_A=confirmedERs,peakList_B=discardedERs, tau.s=1.0E-08)
+## Explore ERs in different group
+print(output)
 
 }
 \author{
-Jurat Shahidin
+Julaiti Shayiding
 }
