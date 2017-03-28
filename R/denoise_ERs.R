@@ -1,89 +1,83 @@
-#' Data cleaning
+#' Exclude all background signal (a.k.a, noise) from input Chip-seq samples
 #'
-#' Given the output of \link{readPeakFiles}, We set up
-#' permissive p-value threshold \code{tau.w} for weakly
-#' enriched regions associated with score and p-value.
-#' We are interested in moderately enriched regions ,
-#' but extremely weakly enriched regions
-#' must be removed from all candidate sample because it
-#' will not give any biological insight. Note that p-value
-#' threshold can be tuned by users, so using different
-#' threshold value will result in different filtering results.
-#' Background signal (A.K.A, noise) also exported as standard
-#' BED file by using \link[rtracklayer]{export.bed} for the sake of
-#' evaluate each ChIP-Seq replicate that bearing different
-#' output set with clear biological evidence.
+#' Give the output of \link{readPeakFiles}, this function
+#' exclude all bacckground noise from input Chip-seq replicates.
+#' using permissive threshold tau.w for signal' significant
+#' value of each enriched region. Extremely weakly enriched regions
+#' won't be processed and excluded from input Chip-seq replicates.
+#' Background signal (a.k.a, noise) also exported as standard BED file
+#' by using \link[rtracklayer]{export.bed} for the sake of
+#' evaluate each Chip-seq replicate that bearing
+#' different output set with clear biological evidence.
 #'
-#' Passed to \link{runMSPC}
+#' Passed to \link{peakOverlapping}
 #'
-#' @param peakGRs Chip-seq replicate imported and
+#' @param peakGRs list of Chip-seq replicate imported and
 #' all enriched regions stored in \code{GRanges} objects
 #'
-#' @param tau.w permissive p-value threshold for weakly
-#' enriched peak, all enrichred regions' pvalue above
-#' this thrshold, are considered background noise
+#' @param tau.w threshold value for weakly enriched peak,
+#' all enrichred regions' pvalue above this thrshold,
+#' are considered background signal (a.k.a, noise)
 #'
-#' @param nmtab Character string that assigned as name to the noise
+#' @param fileName user has option to name background signal
+#' by their own preference. by default name it as "noise"
 #'
-#' @param dest.dir dirctory that exported files can be placed.
-#' only noise can be exported as standard BED file;
+#' @param outDir only noise can be exported as standard BED file;
+#' user has an option to control where the exported files goes
 #'
-#' @param overwrite default FALSE indicating whether
-#' existing files with identical name should be over-written.
+#' @param verbose control whether the output is printed or not
 #'
-#' @return Peaks without background noise is
-#' stoted in \link[GenomicRanges]{GRangesList}
-#'
+#' @return list of enriched regions stored in \link[GenomicRanges]{GRanges}
 #' @export
 #' @importFrom rtracklayer export.bed
+#' @importFrom stats setNames
 #' @importFrom methods hasArg
-#' @importFrom GenomicRanges GRangesList
-#' @author Jurat Shahidin
+#' @author Julaiti Shayiding
 #'
 #' @examples
 #' require(rtracklayer)
 #' require(GenomicRanges)
 #'
 #' ## read peak file as GRanges object
-#' files <- getPeakFile()[1:3]
+#' files <- getPeakFile()[7:8]
 #' grs <- readPeakFiles(files, pvalueBase=1L)
 #'
 #' ## Exclude background noise
 #' total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
-#'                         nmtab = "noise", dest.dir = getwd(), overwrite = TRUE)
+#'                         fileName = "noise", outDir = getwd())
 #' ## Explore all stringent and weak enriched regions
 #' total.ERs
 
-denoise_ERs <- function(peakGRs,
-                        tau.w = 1.0E-04,
-                        nmtab ="noise",
-                        dest.dir = tempdir(),
-                        overwrite=FALSE) {
+denoise_ERs <- function(peakGRs=NULL,tau.w = 1.0E-04,fileName ="noise",
+                        outDir = getwd(),verbose = FALSE) {
     # check input param
-    if (class(peakGRs) != "GRangesList") {
-        stop("input must be a GRangesList Object")
+    if (!hasArg(peakGRs)) {
+        stop("required argument peakGRs is missing,
+             please choose imported Chip-seq replicates!")
     }
+    if(!hasArg(tau.w)) {
+        stop("permissive threshold value must be specified")
+    }
+    stopifnot(inherits(peakGRs[[1L]], "GRanges"))
     stopifnot(length(peakGRs)>0)
     stopifnot(is.numeric(tau.w))
-    if (!dir.exists(dest.dir)) {
-        if (!file.exists(dest.dir))
-            dir.create(dest.dir)
-        else
-            stop("'dest.dir' exists but is not a directory")
+    if (verbose) {
+        cat(">> filter out all background noise peaks whose pvalue
+            above threshold \t\t", format(Sys.time(),
+                                          "%Y-%m-%d %X"), "\n")
     }
-    gr <- unlist(peakGRs, use.names = FALSE)
-    idx <- factor(rep(names(peakGRs), lengths(peakGRs)),
-                  levels = names(peakGRs))
-    Drop <- gr$p.value > tau.w
-    noise <- split(gr[Drop], idx[Drop])
-    if (overwrite) {
-        for(i in seq_along(noise)) {
-            filename <- paste(names(noise)[i], ".bed", sep = "")
-            export.bed(noise[[i]], sprintf("%s/%s.%s", dest.dir, nmtab, filename))
-        }
-    } else {
-        stop(paste("prevent overwriting files; please delete existing file:", dest.dir))
+    if(!dir.exists(outDir)) {
+        dir.create(file.path(outDir))
+        setwd(file.path(outDir))
     }
-    res <- GRangesList(split(gr[!Drop], idx[!Drop]))
-    return(res)
+    res <- lapply(seq_along(peakGRs), function(x) {
+        gr <- peakGRs[[x]]
+        grNM <- names(peakGRs)[x]
+        drop <- gr[gr$p.value > tau.w]
+        export.bed(drop, sprintf("%s/%s.%s.bed", outDir, grNM, fileName))
+        keep <- gr[gr$p.value <= tau.w]
+        return(keep)
+    })
+    rslt <- setNames(res, names(peakGRs))
+    return(rslt)
 }
