@@ -1,31 +1,33 @@
 Package: MSPC
 Type: Package
-Title: Multiple Sample Peak Calling: Using combined evidence from replicates to evaluate ChIP-seq peaks
-Version: 0.99.7
-Author: Jurat Shahidin
+Title: Using combined evidence from replicates to evaluate ChIP-seq peaks
+Version: 0.99.4
+Author: Julaiti Shayiding
 Depends:
     R(>= 3.4)
 Imports:
-    GenomicRanges,
+    GenomicRanges(>= 1.23.16),
     rtracklayer,
-    S4Vectors,
-    IRanges,
+    XVector,
+    S4Vectors (>= 0.9.25),
+    IRanges(>= 2.3.23),
+    BiocGenerics(>= 0.1.0),
     dplyr,
     magrittr,
-    purrr,
+    tibble,
     tidyr,
     ggplot2,
     stats,
     methods,
-    tools,
+    data.table,
     utils
 Suggests:
     knitr,
     rmarkdown,
     testthat,
-    BiocGenerics,
+    tidyverse,
     BiocStyle
-Maintainer: Jurat Shahidin <juratbupt@gmail.com>
+Maintainer: julaiti shayiding <juratbupt@gmail.com>
 Description: This packages implements set of functions to retrieve overlapped
     enriched regions across multiple replicates in parallel (a.k.a, pair-wise),
     statistical method for overlapped regions. simultaneous presence of an
