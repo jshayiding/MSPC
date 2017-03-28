@@ -5,105 +5,112 @@
 #' analysis result, using \link[ggplot2]{ggplot} to generate
 #' stack bar plot for each Chip-seq replicates can be done.
 #'
-#' @param peakList_A output of \link{runMSPC},
+#' @param peakList_A output of \link{filterBycombStringency},
 #' is set of all confirmed ERs in \link[GenomicRanges]{GRanges} objects.
 #'
-#' @param peakList_B output of \link{runMSPC},
+#' @param peakList_B output of \link{mergeDiscERs},
 #' is set of all discarded ERs in \link[GenomicRanges]{GRanges} objects.
 #'
 #' @param tau.s permissive threshold for stringent enriched regions,
 #' all enriched regions below this threshold, are considered stringent ERs
 #'
 #' @return using \link[ggplot2]{ggplot} to generate stack bar plot for file bar
+#'
 #' @export
-#' @importFrom methods hasArg
-#' @importFrom purrr map
 #' @importFrom magrittr %>%
-#' @importFrom tidyr separate
-#' @importFrom dplyr setdiff
-#' @importFrom dplyr bind_rows
+#' @importFrom magrittr %<>%
+#' @importFrom tibble rownames_to_column
+#' @importFrom tidyr separate_
 #' @importFrom dplyr mutate
-#' @importFrom dplyr arrange
-#' @importFrom dplyr desc
+#' @importFrom dplyr bind_rows
 #' @importFrom dplyr group_by
 #' @importFrom dplyr tally
 #' @importFrom dplyr ungroup
-#' @importFrom stats setNames
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_col
 #' @importFrom ggplot2 facet_wrap
-#' @importFrom ggplot2 label_wrap_gen
-#' @importFrom ggplot2 geom_text
-#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 position_stack
+#' @importFrom ggplot2 geom_text
 #' @importFrom ggplot2 theme
+#' @importFrom ggplot2 label_wrap_gen
 #' @importFrom ggplot2 element_text
-#'
-#' @author Jurat Shahidin
+#' @importFrom methods hasArg
+#' @author Julaiti Shayiding
 #'
 #' @examples
-#' # set up
-#' library(GenomicRanges)
-#' library(rtracklayer)
+#' require(GenomicRanges)
+#' require(rtracklayer)
+#' require(XVector)
+#' require(ggplot2)
 #'
-#' # load peak files
-#' files <- getPeakFile()[1:3]
-#' grs <- readPeakFiles(files, pvalueBase=1L)
+#' ## prepare list of confirmedERs, discardedERs
+#' confirmedERs <- GRangesList(
+#'     cat = GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
+#'         strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"),
+#'         score=c(14,9,17),p.value=c(1e-14,1e-09,1e-17)),
+#'     bar = GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
+#'         strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"),
+#'         score=c(22,6,13),p.value=c(1e-22,1e-06,1e-13))
+#' )
 #'
-#' ## Exclude background noise
-#' total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
-#'                         overwrite = TRUE)
+#' discardedERs <- GRangesList(
+#'     bar = GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(6,25,40), c(12,33,49)),
+#'         strand = Rle(c("*"),3), rangeName=c("a2","a5","a8"),
+#'         score=c(13,2,4),p.value=c(1e-13,1e-02,1e-04)),
+#'     cat = GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(15,19,47), c(18,28,55)),
+#'         strand = Rle(c("*"),3), rangeName=c("b4","b6","b9"),
+#'         score=c(11,3,6),p.value=c(1e-11,1e-03,1e-06))
+#' )
 #'
-#' ## explore set of confirmed, discarde peaks
-#' confirmedERs <- runMSPC(peakset = total.ERs, whichType = "max",
-#'                         cmbStrgThreshold = 1.0E-08, isConfirmed = TRUE)
-#' discardedERs <- runMSPC(peakset = total.ERs, whichType = "max",
-#'                         cmbStrgThreshold = 1.0E-08, isConfirmed = FALSE)
+#' ## visualize output
+#' output <- getPlot(
+#'   peakList_A=confirmedERs, peakList_B=discardedERs, tau.s=1.0E-08)
 #'
-#' # Visualize the output set for file bar
-#' getPlot(peakList_A = confirmedERs,
-#'         peakList_B = discardedERs, tau.s = 1.0E-08)
 
-getPlot <- function(peakList_A,
-                    peakList_B,
-                    tau.s=1.0E-08) {
+
+getPlot <- function(peakList_A, peakList_B, tau.s=1.0E-08) {
+    # input param checking
     # sanity check for input param
     if(!hasArg(peakList_A)) {
         stop("required arguments is missing,
-             please choose set of all confirmed ERs")
+             please choose set of confirmed ERs")
     }
     if(!hasArg(peakList_B)) {
         stop("required arguments is missing,
              please choose set of all discarded ERs")
     }
-    peakList_A <- lapply(peakList_A, data.frame)
-    peakList_B <- lapply(peakList_B, data.frame)
     stopifnot(is.numeric(tau.s))
-    plotDat <- bind_rows(c(confirmed = peakList_A,
-                          discarded = peakList_B), .id = "id") %>%
-        separate(id, c("isConfirmed", "Sample")) %>%
-        mutate(peakStringency = ifelse(p.value <= tau.s,
-                                       "Stringent", "Weak")) %>%
-        arrange(Sample, isConfirmed, desc(peakStringency))%>%
-        split(list(.$Sample, .$peakStringency, .$isConfirmed))
-    res <- plotDat %>% bind_rows %>%
-        group_by(peakStringency, isConfirmed, Sample) %>%
-        tally %>% ungroup %>%
-        setNames(c("Replicate", "Output", "Sample", "n")) %>%
+    # cast peakList_A, peakList_B in data.frame
+    peakList_A <- lapply(peakList_A, as.data.frame)
+    peakList_B <- lapply(peakList_B, as.data.frame)
+    names(peakList_A) <- paste("Confirmed", names(peakList_A), sep = ".")
+    names(peakList_B) <- paste("Discarded", names(peakList_B), sep = ".")
+    combDF <- do.call(rbind, c(peakList_A, peakList_B))
+    combDF %<>% rownames_to_column(var = "cn")
+    combDF %<>% separate_("cn",
+                          c("original_list", "letters", "seq"), sep = "\\.")
+    combDF %<>% mutate(peakStringency = ifelse(p.value <= tau.s ,
+                                               "Stringent", "Weak"))
+    res <- combDF %>% split(list(.$letters, .$peakStringency, .$original_list))
+    res %>%
+        bind_rows %>%
+        group_by(peakStringency, original_list, letters) %>%
+        tally %>%
+        ungroup %>%
+        setNames(c("Replicate", "output", "letters", "n")) %>%
         {
-            bind_rows(., setNames(., c("Output", "Replicate", "Sample", "n")))
+            bind_rows(., setNames(., c("output", "Replicate", "letters", "n")))
         } %>%
-        ggplot(aes(x=Replicate, y=n, fill=Output)) + geom_col() +
-        facet_wrap(~paste0(substr(Sample, 1, 20), "\n",
-                           substr(Sample, 21, nchar(Sample))),
-                   labeller = label_wrap_gen(25),scales = "free_x")+
+        ggplot(aes(x=Replicate, y=n, fill=output)) + geom_col() +
+        facet_wrap(~paste0(substr(letters, 1, 20), "\n",
+                           substr(letters, 21, nchar(letters))),
+                   labeller = label_wrap_gen(15),scales = "free_x")+
         geom_text(aes(label=n), position=position_stack(vjust = 0.85))+
-        labs(x = "Replicate", y = "count") +
-        theme(strip.text = element_text(size = 18),
-              axis.text.x = element_text(size=16, angle=70, vjust=0.6),
-              axis.title.x = element_text(size=18,angle=0,hjust=.5,vjust=0),
-              axis.title.y = element_text(size=18,angle=90,hjust=.5,vjust=.5))
-    return(res)
+        theme(strip.text = element_text(size = 10),
+              axis.text.x = element_text(angle=70, vjust=0.6))
 }
-

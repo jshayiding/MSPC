@@ -29,7 +29,7 @@ knitr::opts_chunk$set(tidy         = FALSE,
 
 ```
 
-```{r vignetteSetup, echo=FALSE, message=FALSE, warning = FALSE}
+```{r vignetteSetup, message=FALSE, warning = FALSE}
 library(MSPC)
 library(rtracklayer)
 library(GenomicRanges)
