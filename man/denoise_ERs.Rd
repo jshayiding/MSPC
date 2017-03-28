@@ -2,63 +2,58 @@
 % Please edit documentation in R/denoise_ERs.R
 \name{denoise_ERs}
 \alias{denoise_ERs}
-\title{Data cleaning}
+\title{Exclude all background signal (a.k.a, noise) from input Chip-seq samples}
 \usage{
-denoise_ERs(peakGRs, tau.w = 1e-04, nmtab = "noise", dest.dir = tempdir(),
-  overwrite = FALSE)
+denoise_ERs(peakGRs = NULL, tau.w = 1e-04, fileName = "noise",
+  outDir = getwd(), verbose = FALSE)
 }
 \arguments{
-\item{peakGRs}{Chip-seq replicate imported and
+\item{peakGRs}{list of Chip-seq replicate imported and
 all enriched regions stored in \code{GRanges} objects}
 
-\item{tau.w}{permissive p-value threshold for weakly
-enriched peak, all enrichred regions' pvalue above
-this thrshold, are considered background noise}
+\item{tau.w}{threshold value for weakly enriched peak,
+all enrichred regions' pvalue above this thrshold,
+are considered background signal (a.k.a, noise)}
 
-\item{nmtab}{Character string that assigned as name to the noise}
+\item{fileName}{user has option to name background signal
+by their own preference. by default name it as "noise"}
 
-\item{dest.dir}{dirctory that exported files can be placed.
-only noise can be exported as standard BED file;}
+\item{outDir}{only noise can be exported as standard BED file;
+user has an option to control where the exported files goes}
 
-\item{overwrite}{default FALSE indicating whether
-existing files with identical name should be over-written.}
+\item{verbose}{control whether the output is printed or not}
 }
 \value{
-Peaks without background noise is
-stoted in \link[GenomicRanges]{GRangesList}
+list of enriched regions stored in \link[GenomicRanges]{GRanges}
 }
 \description{
-Given the output of \link{readPeakFiles}, We set up
-permissive p-value threshold \code{tau.w} for weakly
-enriched regions associated with score and p-value.
-We are interested in moderately enriched regions ,
-but extremely weakly enriched regions
-must be removed from all candidate sample because it
-will not give any biological insight. Note that p-value
-threshold can be tuned by users, so using different
-threshold value will result in different filtering results.
-Background signal (A.K.A, noise) also exported as standard
-BED file by using \link[rtracklayer]{export.bed} for the sake of
-evaluate each ChIP-Seq replicate that bearing different
-output set with clear biological evidence.
+Give the output of \link{readPeakFiles}, this function
+exclude all bacckground noise from input Chip-seq replicates.
+using permissive threshold tau.w for signal' significant
+value of each enriched region. Extremely weakly enriched regions
+won't be processed and excluded from input Chip-seq replicates.
+Background signal (a.k.a, noise) also exported as standard BED file
+by using \link[rtracklayer]{export.bed} for the sake of
+evaluate each Chip-seq replicate that bearing
+different output set with clear biological evidence.
 }
 \details{
-Passed to \link{runMSPC}
+Passed to \link{peakOverlapping}
 }
 \examples{
 require(rtracklayer)
 require(GenomicRanges)
 
 ## read peak file as GRanges object
-files <- getPeakFile()[1:3]
+files <- getPeakFile()[7:8]
 grs <- readPeakFiles(files, pvalueBase=1L)
 
 ## Exclude background noise
 total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
-                        nmtab = "noise", dest.dir = getwd(), overwrite = TRUE)
+                        fileName = "noise", outDir = getwd())
 ## Explore all stringent and weak enriched regions
 total.ERs
 }
 \author{
-Jurat Shahidin
+Julaiti Shayiding
 }

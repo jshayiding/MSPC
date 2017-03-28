@@ -40,4 +40,4 @@ BugReports: https://github.com/julaiti/MSPC/issues
 biocViews: Software, Sequencing,ChIPSeq, ChipOnChip
 LazyData: TRUE
 VignetteBuilder: knitr
-RoxygenNote: 6.0.0
+RoxygenNote: 6.0.1
