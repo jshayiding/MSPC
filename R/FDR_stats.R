@@ -1,82 +1,135 @@
-# MSPC - an R/Bioconductor Package for Multiple Sample Peak Calling
+#' Multiple Testing Correction
 #'
-#' Multiple testing correction
+#' We distinguish Technical and Biological Chip-seq replicates.
+#' Technical replicates aim at controlling the variability of
+#' the experimental procedure used to obtain the data should
+#' yield exactly the same result in the absence of experimental noise.
+#' If user choose replicate type as `Technical`, then enriched regions
+#' were passed in one test
+#' (A.K.A, comply minimum overlapping peak requirement) but failed
+#' in the another (A.K.A, combined stringency test with Fisher's method),
+#' these peaks won't be appeared in final output.
+#' Given the output of \link{filterBycombStringency},
+#' we decided to use intermediate set purification
+#' to further check any ERs both exist in confirmed, discarded ERs set.
+#' We kept all confirmed ERs, discarded ERs in the list,
+#' so using `anti_join` method from dplyr packages
+#' make set purification easy. However, we need to correct
+#' the p.value of ERs using the Benjamini-Hochberg
+#' multiple testing correction with user-specified false discovery rate,
+#' using \link[stats]{p.adjust} to do BH correction method,  which yields
+#' multiple-testing confirmed or discarded ERs.
 #'
-#' Given the output of \link{runMSPC}, we obtained set of peak which comply with
-#' combined stringency test by Fisher method, and classified as confirmed peaks.
-#' However, we need to further evaluate set of confirmed peaks
-#' with multiple testing corrections procedure, and produce final output set.
+#' @param peakList_A output of \link{filterBycombStringency},
+#' is set of all confirmed ERs
+#' in \link[GenomicRanges]{GRanges} objects.
 #'
-#' @param peakList set of confirmed peaks through combined stringency test.
+#' @param peakList_B output of \link{mergeDiscERs},
+#' is set of all discarded ERs
+#' in \link[GenomicRanges]{GRanges} objects.
+#'
+#' @param fdr parameter for false discovery rate;
+#'
 #' @param pAdjustMethod pvalue adjustment method
-#' @param fdr parameter for false discovery rate
-#' @param asPlot logical whether produce graphical plot or not
-#' @return set of enriched regions in BED format file
+#'
+#' @param replicate.type A charcter vector used to select
+#' type of Chip-seq replicate ( Biological / Technical replicate).
+#'
+#' @return output of multiple testing correction can be exported as
+#' BED file by using \link[rtracklayer]{export.bed} method.
+#'
 #' @export
-# @importFrom rtracklayer export.bed
-#' @importFrom utils write.csv
 #' @importFrom stats p.adjust
-#' @importFrom methods as
-#' @importFrom magrittr %>%
-#' @importFrom dplyr bind_rows
-#' @importFrom tidyr separate
-#' @importFrom dplyr mutate
-#' @importFrom dplyr count
-#' @importFrom dplyr select
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_col
-#' @author Jurat Shahidin
+#' @importFrom dplyr anti_join
+#' @importFrom rtracklayer export.bed
+#' @importFrom rtracklayer as.data.frame
+#' @importFrom methods hasArg
+#' @author Julaiti Shayiding
 #'
 #' @examples
-#' # set up
-#' library(GenomicRanges)
-#' library(rtracklayer)
+#' require(GenomicRanges)
+#' require(rtracklayer)
+#' require(XVector)
 #'
-#' # load peak files
-#' files <- getPeakFile()[1:3]
-#' grs <- readPeakFiles(files, pvalueBase=1L)
+#' ## prepare list of confirmedERs, discardedERs
+#' confirmedERs <- GRangesList(
+#'     cat = GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(7,19,31), c(13,28,43)),
+#'         strand = Rle(c("*"),3), rangeName=c("b3","b6","b7"),
+#'         score=c(14,9,17),p.value=c(1e-14,1e-09,1e-17)),
+#'     bar = GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(1,6,16), c(4,12,23)),
+#'         strand = Rle(c("*"),3), rangeName=c("a1", "a2", "a3"),
+#'         score=c(22,6,13),p.value=c(1e-22,1e-06,1e-13))
+#' )
 #'
-#' ## Exclude background noise
-#' total.ERs <- denoise_ERs(peakGRs = grs, tau.w = 1.0E-04,
-#'                         overwrite = TRUE)
+#' discardedERs <- GRangesList(
+#'     bar = GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(6,25,40), c(12,33,49)),
+#'         strand = Rle(c("*"),3), rangeName=c("a2","a5","a8"),
+#'         score=c(3,12,4),p.value=c(1e-03,1e-12,1e-04)),
+#'     cat = GRanges(
+#'         seqnames=Rle("chr1", 3),ranges=IRanges(c(15,19,47), c(18,28,55)),
+#'         strand = Rle(c("*"),3), rangeName=c("b4","b6","b9"),
+#'         score=c(11,3,6),p.value=c(1e-11,1e-03,1e-06))
+#' )
 #'
-#' ## explore set of confirmed, discarde peaks
-#' confirmedERs <- runMSPC(peakset = total.ERs, whichType = "max",
-#'                         cmbStrgThreshold = 1.0E-08, isConfirmed = TRUE)
+#' ## call FDR_stats to create output set
+#' BH_output <- FDR_stats(
+#'     peakList_A = confirmedERs,peakList_B = discardedERs,
+#'     pAdjustMethod = "BH", fdr = 0.05,
+#'     replicate.type = "Technical")
 #'
-#' # multiple testing correction
-#' FDR_stats(peakList = confirmedERs,
-#'           pAdjustMethod = "BH",
-#'           fdr = 0.05, asPlot =FALSE )
-#'
+#' ## Explore output of multiple testting correction
+#' BH_output
 
-FDR_stats <- function(peakList,
-                      pAdjustMethod="BH",
+
+FDR_stats <- function(peakList_A, peakList_B, pAdjustMethod="BH",
                       fdr = 0.05,
-                      asPlot=TRUE) {
+                      replicate.type=c("Biological", "Technical")) {
+    # check input param
     # sanity check for input param
-    if(!hasArg(peakList)) {
+    if(!hasArg(peakList_A)) {
         stop("required arguments is missing,
              please choose set of all confirmed ERs")
     }
-    pAdjustMethod = match.arg(pAdjustMethod)
-    stopifnot(is.numeric(fdr))
-    peakList <- lapply(peakList, data.frame)
-    res <- bind_rows(peakList, .id = "id") %>%
-        separate(id, "sample") %>%
-        mutate(adjust.pvalue = p.adjust(p.value, method = pAdjustMethod),
-               Output = ifelse(adjust.pvalue <= fdr, "Output_mtc", "Output_mtd")) %>%
-        split(list(.$sample, .$Output))
-    if(asPlot) {
-        plotDat <- bind_rows(res, .id = "Catg") %>% count(sample, Catg)
-        ggplot(plotDat, aes(x = sample, y = n, fill = Output)) +
-            geom_col(aes(fill = Catg), position = "dodge")
-    } else {
-        DF <- res %>% lapply(select, -c(sample, Output))
-        ## Give option to export them as `csv` or `bed`
-        #res <- lapply(DF, function(x) as(x, "GRanges"))
-        rslt <- mapply(write.csv, DF, paste0(names(DF), ".csv"))
-        return(rslt)
+    if(!hasArg(peakList_B)) {
+        stop("required arguments is missing,
+             please choose set of discarded ERs")
     }
+    pAdjustMethod = match.arg(pAdjustMethod)
+    replicate.type = match.arg(replicate.type)
+    stopifnot(is.numeric(fdr))
+    message("set purification on set of confirmed, discarded peaks")
+    ## peakList_A, peakList_B must be casted to data.frame
+    peakList_A <- lapply(peakList_A, as.data.frame)
+    peakList_B <- lapply(peakList_B, as.data.frame)
+    # if (!dir.exists(outDir)) {
+    #   dir.create(file.path(outDir))
+    # }
+    if(replicate.type=="Biological") {
+        setPurf <- peakList_A
+    } else {
+        setPurf <- Map(anti_join, peakList_A, peakList_B)
+    }
+    setPurf <- lapply(setPurf, function(x) as(x, "GRanges"))
+    byFDR <- lapply(setPurf, function(ele_) {
+        if(is.null(ele_$p.value)) {
+            stop("p.value is required")
+        } else {
+            p <- ele_$p.value
+            ele_$p.adj <- p.adjust(p, method = "BH")
+            ele_ <- split(ele_,
+                          ifelse(ele_$p.adj <= fdr,
+                                 "BH_Pass", "BH_Failed"))
+            ele_
+        }
+    })
+    byFDR <- lapply(byFDR, unique)
+    rslt <- lapply(names(byFDR), function(elm) {
+        mapply(export.bed,
+               byFDR[[elm]],
+               paste0(elm, ".", names(byFDR[[elm]]), ".bed"))
+    })
+    return(rslt)
 }
