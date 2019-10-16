@@ -37,14 +37,15 @@ Imports:
 Local files:
 
 ```
-    crimepricers.py
-    CrimeApp directory with:
-      Preprocess_Feather.py
-      Utilities.py
-    CrimeData.feather
-    crime_community.feather
-    chicago_communities.geojson
-    ppsf.csv
+    MSPC_Package.R
+    readPeakFile.R
+    denoise_ER.R
+    exportER.R
+    getPlot.R
+    runMSPC.R
+    FDR_stats.R
+    utilities.R
+    zzz.R
 
 ```
 ## Result of Enrichment Analysis
