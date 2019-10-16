@@ -20,20 +20,18 @@ Graphical version of MSPC software can be found and available at project site ht
 ### RUN MSPC Package
 
 ```
-R:
-
-  python 3
-  
-python libraries:
-
-     dash
-     json
-     plotly
-     matplotlib.pyplot
-     numpy
-     panda
-     csv
-     feather
+Depends:
+    R(>= 3.6)
+Imports:
+    GenomicRanges,
+    rtracklayer,
+    S4Vectors,
+    IRanges,
+    dplyr,
+    magrittr,
+    purrr,
+    tidyr,
+    ggplot2
 ```
 
 Local files:
