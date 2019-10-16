@@ -48,6 +48,11 @@ Local files:
     zzz.R
 
 ```
+### MSPC implementation pipeline
+Here is final stage of full-stack implementation of MSPC package:
+
+![screenshot1](output/package_pipeline.PNG)
+
 ## Result of Enrichment Analysis
 
 ![screenshot1](app_images/crime&realEstate.PNG)
