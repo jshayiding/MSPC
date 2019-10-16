@@ -55,6 +55,10 @@ Here is final stage of full-stack implementation of MSPC package:
 
 ## Result of Enrichment Analysis
 
-![screenshot1](app_images/crime&realEstate.PNG)
+MSPC package has been tested with Myc TF public datasets in K562 human cells available from ENCODE
+project, result was validated with verified software tool [MuSERA1](https://archive.codeplex.com/?p=musera)
+under same parameter setting, whereas accuracy reaches 96%.
+
+![screenshot1](output/accuracy_plot.PNG)
 
 ![screenshot2](app_images/all_crime_viz.PNG)
