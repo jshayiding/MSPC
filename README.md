@@ -59,6 +59,8 @@ MSPC package has been tested with Myc TF public datasets in K562 human cells ava
 project, result was validated with verified software tool [MuSERA1](https://archive.codeplex.com/?p=musera)
 under same parameter setting, whereas accuracy reaches 96%.
 
-![screenshot1](output/accuracy_plot.PNG)
+![screenshot1](output/accuracy_plot.png)
 
-![screenshot2](app_images/all_crime_viz.PNG)
+Also MSPC package provides benchmark result for testing different number of input replicate sample down below:
+
+![screenshot2](output/benchmark_plot.png)
