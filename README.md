@@ -17,7 +17,7 @@ ChIP-seq peaks. Bioinformatics 2015, 31(17):2761-2769.doi:[10.1093/bioinformatic
 implemented in C# programming language and publicly available at https://mspc.codeplex.com. 
 Graphical version of MSPC software can be found and available at project site http://musera.codeplex.com.
 
-### RUN MSPC Package
+### MSPC Package dependencies
 
 ```
 Depends:
