@@ -51,7 +51,7 @@ Local files:
 ### MSPC implementation pipeline
 Here is final stage of full-stack implementation of MSPC package:
 
-![screenshot1](output/package_pipeline.PNG)
+![screenshot1](output/package_pipeline.jpg)
 
 ## Result of Enrichment Analysis
 
